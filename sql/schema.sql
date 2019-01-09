@@ -81,3 +81,18 @@ CREATE TABLE employers
 COMMENT ON TABLE companies
     IS 'Таблица работодателей, которые могут размещать вакансии.';
 
+DROP TABLE IF EXISTS resumes;
+DROP SEQUENCE IF EXISTS resumes_resume_id_seq;
+CREATE SEQUENCE resumes_resume_id_seq;
+CREATE TABLE resumes
+(
+    resume_id integer NOT NULL DEFAULT nextval('resumes_resume_id_seq'),
+    applicant_fk integer UNIQUE NOT NULL,
+    CONSTRAINT resumes_resume_id_pkey PRIMARY KEY (resume_id),
+    CONSTRAINT resumes_resume_fk_fkey FOREIGN KEY (applicant_fk)
+        REFERENCES applicants (applicant_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+
