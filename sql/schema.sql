@@ -114,3 +114,30 @@ CREATE TABLE vacancies
 
 COMMENT ON TABLE vacancies
     IS 'Таблица вакансий, размещенных компаниями.';
+
+DROP TABLE IF EXISTS locations;
+DROP SEQUENCE IF EXISTS locations_location_id_seq;
+CREATE SEQUENCE locations_location_id_seq;
+CREATE TABLE locations(
+    location_id integer NOT NULL DEFAULT nextval('locations_location_id_seq'),
+    country  character varying(500)[] NOT NULL,
+    region   character varying(500)[] NOT NULL,
+    city     character varying(500)[] NOT NULL,
+    district character varying(500)[],
+    CONSTRAINT locations_location_id_pkey PRIMARY KEY (location_id)
+);
+
+COMMENT ON TABLE locations
+    IS 'Таблица локаций, вкакнсий и резюме.';
+
+DROP TABLE IF EXISTS job_types;
+DROP SEQUENCE IF EXISTS job_types_type_id_seq;
+CREATE SEQUENCE job_types_type_id_seq;
+CREATE TABLE job_types(
+      type_id integer NOT NULL DEFAULT nextval('job_types_type_id_seq'),
+      name character varying(500)[] NOT NULL,
+      CONSTRAINT job_types_type_id_pkey PRIMARY KEY (type_id)
+);
+
+COMMENT ON TABLE job_types
+    IS 'Таблица типов работы (полная,частичная занятость)';
