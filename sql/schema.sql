@@ -95,4 +95,22 @@ CREATE TABLE resumes
         ON DELETE NO ACTION
 );
 
+COMMENT ON TABLE resumes
+    IS 'Таблица резюме, которые создаются соискателями.';
 
+DROP TABLE IF EXISTS vacancies;
+DROP SEQUENCE IF EXISTS vacancies_vacancy_id_seq;
+CREATE SEQUENCE vacancies_vacancy_id_seq;
+CREATE TABLE vacancies
+(
+    vacancy_id integer NOT NULL DEFAULT nextval('vacancies_vacancy_id_seq'),
+    company_fk integer NOT NULL,
+    CONSTRAINT vacancies_vacancy_id_pkey PRIMARY KEY (vacancy_id),
+    CONSTRAINT vacancies_company_fk_fkey FOREIGN KEY (company_fk)
+        REFERENCES companies (company_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+COMMENT ON TABLE vacancies
+    IS 'Таблица вакансий, размещенных компаниями.';
