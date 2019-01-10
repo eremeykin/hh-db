@@ -57,7 +57,7 @@ CREATE TABLE salaries(
 );
 
 COMMENT ON TABLE salaries
-    IS 'Таблица типов работы (полная,частичная занятость)';
+    IS 'Таблица с данными о зарплате.';
 
 
 
@@ -68,7 +68,7 @@ CREATE TABLE types(
 );
 
 COMMENT ON TABLE types
-    IS 'Таблица типов работы (полная,частичная занятость)';
+    IS 'Таблица типов работы (полная,частичная занятость).';
 
 
 
@@ -82,7 +82,7 @@ CREATE TABLE locations(
 );
 
 COMMENT ON TABLE locations
-    IS 'Таблица локаций, вкакнсий и резюме.';
+    IS 'Таблица локаций.';
 
 CREATE TABLE jobs
 (
@@ -104,6 +104,10 @@ CREATE TABLE jobs
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
+COMMENT ON TABLE jobs
+    IS 'Таблица описания работы';
+
 
 CREATE TABLE companies
 (
