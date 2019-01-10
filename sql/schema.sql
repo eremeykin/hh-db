@@ -22,7 +22,6 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS types;
-DROP TABLE IF EXISTS salaries;
 DROP TABLE IF EXISTS profiles;
 
 DROP SEQUENCE IF EXISTS employers_employer_id_seq;
@@ -34,7 +33,6 @@ DROP SEQUENCE IF EXISTS users_user_id_seq;
 DROP SEQUENCE IF EXISTS jobs_job_id_seq;
 DROP SEQUENCE IF EXISTS locations_location_id_seq;
 DROP SEQUENCE IF EXISTS types_type_id_seq;
-DROP SEQUENCE IF EXISTS salaries_salary_id_seq;
 DROP SEQUENCE IF EXISTS profiles_profile_id_seq;
 
 CREATE SEQUENCE employers_employer_id_seq;
@@ -46,19 +44,10 @@ CREATE SEQUENCE users_user_id_seq;
 CREATE SEQUENCE jobs_job_id_seq;
 CREATE SEQUENCE locations_location_id_seq;
 CREATE SEQUENCE types_type_id_seq;
-CREATE SEQUENCE salaries_salary_id_seq;
 CREATE SEQUENCE profiles_profile_id_seq;
 
 
 
-CREATE TABLE salaries(
-      salary_id integer NOT NULL DEFAULT nextval('salaries_salary_id_seq'),
-      value int8range NOT NULL,
-      CONSTRAINT salaries_salary_id_pkey PRIMARY KEY (salary_id)
-);
-
-COMMENT ON TABLE salaries
-    IS 'Таблица с данными о зарплате.';
 
 
 
@@ -92,7 +81,7 @@ CREATE TABLE jobs
     job_id integer NOT NULL DEFAULT nextval('jobs_job_id_seq'),
     location_fk integer,
     type_fk integer,
-    salary_fk integer,
+    salary int8range,
     CONSTRAINT jobs_job_id_pkey PRIMARY KEY (job_id),
     CONSTRAINT jobs_location_fk_fkey FOREIGN KEY (location_fk)
         REFERENCES locations (location_id) MATCH SIMPLE
@@ -100,10 +89,6 @@ CREATE TABLE jobs
         ON DELETE NO ACTION,
     CONSTRAINT jobs_type_fk_fkey FOREIGN KEY (type_fk)
         REFERENCES types (type_id)  MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT jobs_salary_fk_fkey FOREIGN KEY (salary_fk)
-        REFERENCES salaries (salary_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
