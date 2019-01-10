@@ -19,10 +19,11 @@ DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS resumes;
 DROP TABLE IF EXISTS applicants;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS job_properties;
+DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS locations;
-DROP TABLE IF EXISTS job_types;
-DROP TABLE IF EXISTS salary_ranges;
+DROP TABLE IF EXISTS types;
+DROP TABLE IF EXISTS salaries;
+DROP TABLE IF EXISTS profiles;
 
 DROP SEQUENCE IF EXISTS employers_employer_id_seq;
 DROP SEQUENCE IF EXISTS vacancies_vacancy_id_seq;
@@ -30,10 +31,11 @@ DROP SEQUENCE IF EXISTS companies_company_id_seq;
 DROP SEQUENCE IF EXISTS resumes_resume_id_seq;
 DROP SEQUENCE IF EXISTS applicants_applicant_id_seq;
 DROP SEQUENCE IF EXISTS users_user_id_seq;
-DROP SEQUENCE IF EXISTS job_properties_property_id_seq;
+DROP SEQUENCE IF EXISTS jobs_job_id_seq;
 DROP SEQUENCE IF EXISTS locations_location_id_seq;
-DROP SEQUENCE IF EXISTS job_types_type_id_seq;
-DROP SEQUENCE IF EXISTS salary_ranges_range_id_seq;
+DROP SEQUENCE IF EXISTS types_type_id_seq;
+DROP SEQUENCE IF EXISTS salaries_salary_id_seq;
+DROP SEQUENCE IF EXISTS profiles_profile_id_seq;
 
 CREATE SEQUENCE employers_employer_id_seq;
 CREATE SEQUENCE vacancies_vacancy_id_seq;
@@ -41,30 +43,31 @@ CREATE SEQUENCE companies_company_id_seq;
 CREATE SEQUENCE resumes_resume_id_seq;
 CREATE SEQUENCE applicants_applicant_id_seq;
 CREATE SEQUENCE users_user_id_seq;
-CREATE SEQUENCE job_properties_property_id_seq;
+CREATE SEQUENCE jobs_job_id_seq;
 CREATE SEQUENCE locations_location_id_seq;
-CREATE SEQUENCE job_types_type_id_seq;
-CREATE SEQUENCE salary_ranges_range_id_seq;
+CREATE SEQUENCE types_type_id_seq;
+CREATE SEQUENCE salaries_salary_id_seq;
+CREATE SEQUENCE profiles_profile_id_seq;
 
 
-CREATE TABLE salary_ranges(
-      range_id integer NOT NULL DEFAULT nextval('salary_ranges_range_id_seq'),
+CREATE TABLE salaries(
+      salary_id integer NOT NULL DEFAULT nextval('salaries_salary_id_seq'),
       value int8range NOT NULL,
-      CONSTRAINT salary_ranges_range_id_pkey PRIMARY KEY (range_id)
+      CONSTRAINT salaries_salary_id_pkey PRIMARY KEY (salary_id)
 );
 
-COMMENT ON TABLE salary_ranges
+COMMENT ON TABLE salaries
     IS 'Таблица типов работы (полная,частичная занятость)';
 
 
 
-CREATE TABLE job_types(
-      type_id integer NOT NULL DEFAULT nextval('job_types_type_id_seq'),
+CREATE TABLE types(
+      type_id integer NOT NULL DEFAULT nextval('types_type_id_seq'),
       name character varying(500)[] NOT NULL,
-      CONSTRAINT job_types_type_id_pkey PRIMARY KEY (type_id)
+      CONSTRAINT types_type_id_pkey PRIMARY KEY (type_id)
 );
 
-COMMENT ON TABLE job_types
+COMMENT ON TABLE types
     IS 'Таблица типов работы (полная,частичная занятость)';
 
 
@@ -81,23 +84,23 @@ CREATE TABLE locations(
 COMMENT ON TABLE locations
     IS 'Таблица локаций, вкакнсий и резюме.';
 
-CREATE TABLE job_properties
+CREATE TABLE jobs
 (
-    property_id integer NOT NULL DEFAULT nextval('job_properties_property_id_seq'),
+    job_id integer NOT NULL DEFAULT nextval('jobs_job_id_seq'),
     location_fk integer,
-    job_type_fk integer,
-    salary_range_fk integer,
-    CONSTRAINT job_properties_property_id_pkey PRIMARY KEY (property_id),
-    CONSTRAINT job_properties_location_fk_fkey FOREIGN KEY (location_fk)
+    type_fk integer,
+    salary_fk integer,
+    CONSTRAINT jobs_job_id_pkey PRIMARY KEY (job_id),
+    CONSTRAINT jobs_location_fk_fkey FOREIGN KEY (location_fk)
         REFERENCES locations (location_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT job_properties_job_type_fk_fkey FOREIGN KEY (job_type_fk)
-        REFERENCES job_types (type_id)  MATCH SIMPLE
+    CONSTRAINT jobs_type_fk_fkey FOREIGN KEY (type_fk)
+        REFERENCES types (type_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT job_properties_salary_range_fk_fkey FOREIGN KEY (salary_range_fk)
-        REFERENCES salary_ranges (range_id) MATCH SIMPLE
+    CONSTRAINT jobs_salary_fk_fkey FOREIGN KEY (salary_fk)
+        REFERENCES salaries (salary_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -117,14 +120,14 @@ CREATE TABLE vacancies
 (
     vacancy_id integer NOT NULL DEFAULT nextval('vacancies_vacancy_id_seq'),
     company_fk integer NOT NULL,
-    job_property_fk integer,
+    job_fk integer,
     CONSTRAINT vacancies_vacancy_id_pkey PRIMARY KEY (vacancy_id),
     CONSTRAINT vacancies_company_fk_fkey FOREIGN KEY (company_fk)
         REFERENCES companies (company_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT vacancies_job_property_fk_fkey FOREIGN KEY (job_property_fk)
-        REFERENCES job_properties (property_id) MATCH SIMPLE
+    CONSTRAINT vacancies_job_fk_fkey FOREIGN KEY (job_fk)
+        REFERENCES jobs (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -134,13 +137,31 @@ COMMENT ON TABLE vacancies
 
 
 
+CREATE TABLE profiles
+(
+    profile_id integer NOT NULL DEFAULT nextval('profiles_profile_id_seq'),
+    CONSTRAINT profiles_profile_if_pkey PRIMARY KEY (profile_id)
+);
+
+COMMENT ON TABLE profiles
+    IS 'Таблица профелей пользователей, которая содержит их личные данные.';
+
+
+
 CREATE TABLE users
 (
     user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'),
     email character varying(500)[] NOT NULL,
     password character varying(500)[] NOT NULL,
-    CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id)
+    profile_fk integer,
+    CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id),
+    CONSTRAINT users_profile_fk_fkey FOREIGN KEY (profile_fk)
+        REFERENCES profiles (profile_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 );
+
+
 
 COMMENT ON TABLE users
     IS 'Таблица пользователей, которые могут залогиниться на сайт.';
@@ -167,14 +188,14 @@ CREATE TABLE resumes
 (
     resume_id integer NOT NULL DEFAULT nextval('resumes_resume_id_seq'),
     applicant_fk integer UNIQUE NOT NULL,
-    job_property_fk integer,
+    job_fk integer,
     CONSTRAINT resumes_resume_id_pkey PRIMARY KEY (resume_id),
     CONSTRAINT resumes_resume_fk_fkey FOREIGN KEY (applicant_fk)
         REFERENCES applicants (applicant_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT resumes_job_property_fk_fkey FOREIGN KEY (job_property_fk)
-        REFERENCES job_properties (property_id) MATCH SIMPLE
+    CONSTRAINT resumes_job_fk_fkey FOREIGN KEY (job_fk)
+        REFERENCES jobs (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
