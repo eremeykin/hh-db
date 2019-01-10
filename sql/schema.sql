@@ -53,7 +53,7 @@ CREATE SEQUENCE profiles_profile_id_seq;
 
 CREATE TABLE types(
       type_id integer NOT NULL DEFAULT nextval('types_type_id_seq'),
-      name character varying(500)[] NOT NULL,
+      name character varying(500) NOT NULL,
       CONSTRAINT types_type_id_pkey PRIMARY KEY (type_id)
 );
 
@@ -64,10 +64,10 @@ COMMENT ON TABLE types
 
 CREATE TABLE locations(
     location_id integer NOT NULL DEFAULT nextval('locations_location_id_seq'),
-    country  character varying(500)[] NOT NULL,
-    region   character varying(500)[] NOT NULL,
-    city     character varying(500)[] NOT NULL,
-    district character varying(500)[],
+    country  character varying(500) NOT NULL,
+    region   character varying(500) NOT NULL,
+    city     character varying(500) NOT NULL,
+    district character varying(500),
     CONSTRAINT locations_location_id_pkey PRIMARY KEY (location_id)
 );
 
@@ -101,7 +101,7 @@ COMMENT ON TABLE jobs
 CREATE TABLE companies
 (
     company_id integer NOT NULL DEFAULT nextval('companies_company_id_seq'),
-    name character varying(500)[] NOT NULL,
+    name character varying(500) NOT NULL,
     CONSTRAINT companies_company_id_pkey PRIMARY KEY (company_id)
 );
 
@@ -134,10 +134,10 @@ COMMENT ON TABLE vacancies
 CREATE TABLE profiles
 (
     profile_id integer NOT NULL DEFAULT nextval('profiles_profile_id_seq'),
-    first_name character varying(500)[] NOT NULL,
-    family_name character varying(500)[] NOT NULL,
-    patronymic character varying(500)[],
-    contact_email character varying(500)[],
+    first_name character varying(500) NOT NULL,
+    family_name character varying(500) NOT NULL,
+    patronymic character varying(500),
+    contact_email character varying(500),
     contact_phone integer NOT NULL,
     CONSTRAINT profiles_profile_if_pkey PRIMARY KEY (profile_id)
 );
@@ -150,8 +150,8 @@ COMMENT ON TABLE profiles
 CREATE TABLE users
 (
     user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'),
-    login character varying(500)[] UNIQUE NOT NULL,
-    password character varying(500)[] NOT NULL,
+    login character varying(500) UNIQUE NOT NULL,
+    password character varying(500) NOT NULL,
     profile_fk integer,
     CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id),
     CONSTRAINT users_profile_fk_fkey FOREIGN KEY (profile_fk)
