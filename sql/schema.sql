@@ -160,7 +160,7 @@ COMMENT ON TABLE profiles
 CREATE TABLE users
 (
     user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'),
-    login character varying(500)[] NOT NULL,
+    login character varying(500)[] UNIQUE NOT NULL,
     password character varying(500)[] NOT NULL,
     profile_fk integer,
     CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id),
