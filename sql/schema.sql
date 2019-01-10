@@ -140,6 +140,11 @@ COMMENT ON TABLE vacancies
 CREATE TABLE profiles
 (
     profile_id integer NOT NULL DEFAULT nextval('profiles_profile_id_seq'),
+    first_name character varying(500)[] NOT NULL,
+    family_name character varying(500)[] NOT NULL,
+    patronymic character varying(500)[],
+    contact_email character varying(500)[],
+    contact_phone integer NOT NULL,
     CONSTRAINT profiles_profile_if_pkey PRIMARY KEY (profile_id)
 );
 
@@ -151,7 +156,7 @@ COMMENT ON TABLE profiles
 CREATE TABLE users
 (
     user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'),
-    email character varying(500)[] NOT NULL,
+    login character varying(500)[] NOT NULL,
     password character varying(500)[] NOT NULL,
     profile_fk integer,
     CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id),
