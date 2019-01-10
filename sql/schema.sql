@@ -50,6 +50,7 @@ CREATE SEQUENCE salaries_salary_id_seq;
 CREATE SEQUENCE profiles_profile_id_seq;
 
 
+
 CREATE TABLE salaries(
       salary_id integer NOT NULL DEFAULT nextval('salaries_salary_id_seq'),
       value int8range NOT NULL,
@@ -84,6 +85,8 @@ CREATE TABLE locations(
 COMMENT ON TABLE locations
     IS 'Таблица локаций.';
 
+
+
 CREATE TABLE jobs
 (
     job_id integer NOT NULL DEFAULT nextval('jobs_job_id_seq'),
@@ -109,9 +112,11 @@ COMMENT ON TABLE jobs
     IS 'Таблица описания работы';
 
 
+
 CREATE TABLE companies
 (
     company_id integer NOT NULL DEFAULT nextval('companies_company_id_seq'),
+    name character varying(500)[] NOT NULL,
     CONSTRAINT companies_company_id_pkey PRIMARY KEY (company_id)
 );
 
@@ -169,8 +174,6 @@ CREATE TABLE users
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-
-
 
 COMMENT ON TABLE users
     IS 'Таблица пользователей, которые могут залогиниться на сайт.';
