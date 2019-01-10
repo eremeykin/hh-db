@@ -13,36 +13,40 @@
 -- colname_id => PRIMARY KEY
 -- colname_fk => FOREIGN KEY
 
-
-DROP TABLE IF EXISTS job_properties;
-DROP SEQUENCE IF EXISTS job_properties_property_id_seq;
-
-
-
-DROP TABLE IF EXISTS job_properties;
-DROP SEQUENCE IF EXISTS job_properties_property_id_seq;
-DROP TABLE IF EXISTS locations;
-DROP SEQUENCE IF EXISTS locations_location_id_seq;
-DROP TABLE IF EXISTS vacancies;
-DROP SEQUENCE IF EXISTS vacancies_vacancy_id_seq;
-DROP TABLE IF EXISTS resumes;
-DROP SEQUENCE IF EXISTS resumes_resume_id_seq;
-DROP TABLE IF EXISTS job_types;
-DROP SEQUENCE IF EXISTS job_types_type_id_seq;
 DROP TABLE IF EXISTS employers;
-DROP SEQUENCE IF EXISTS employers_employer_id_seq;
+DROP TABLE IF EXISTS vacancies;
 DROP TABLE IF EXISTS companies;
-DROP SEQUENCE IF EXISTS companies_company_id_seq;
+DROP TABLE IF EXISTS resumes;
 DROP TABLE IF EXISTS applicants;
-DROP SEQUENCE IF EXISTS applicants_applicant_id_seq;
 DROP TABLE IF EXISTS users;
-DROP SEQUENCE IF EXISTS users_user_id_seq;
+DROP TABLE IF EXISTS job_properties;
+DROP TABLE IF EXISTS locations;
+DROP TABLE IF EXISTS job_types;
 DROP TABLE IF EXISTS salary_ranges;
+
+DROP SEQUENCE IF EXISTS employers_employer_id_seq;
+DROP SEQUENCE IF EXISTS vacancies_vacancy_id_seq;
+DROP SEQUENCE IF EXISTS companies_company_id_seq;
+DROP SEQUENCE IF EXISTS resumes_resume_id_seq;
+DROP SEQUENCE IF EXISTS applicants_applicant_id_seq;
+DROP SEQUENCE IF EXISTS users_user_id_seq;
+DROP SEQUENCE IF EXISTS job_properties_property_id_seq;
+DROP SEQUENCE IF EXISTS locations_location_id_seq;
+DROP SEQUENCE IF EXISTS job_types_type_id_seq;
 DROP SEQUENCE IF EXISTS salary_ranges_range_id_seq;
 
-
-
+CREATE SEQUENCE employers_employer_id_seq;
+CREATE SEQUENCE vacancies_vacancy_id_seq;
+CREATE SEQUENCE companies_company_id_seq;
+CREATE SEQUENCE resumes_resume_id_seq;
+CREATE SEQUENCE applicants_applicant_id_seq;
+CREATE SEQUENCE users_user_id_seq;
+CREATE SEQUENCE job_properties_property_id_seq;
+CREATE SEQUENCE locations_location_id_seq;
+CREATE SEQUENCE job_types_type_id_seq;
 CREATE SEQUENCE salary_ranges_range_id_seq;
+
+
 CREATE TABLE salary_ranges(
       range_id integer NOT NULL DEFAULT nextval('salary_ranges_range_id_seq'),
       value int8range NOT NULL,
@@ -54,7 +58,6 @@ COMMENT ON TABLE salary_ranges
 
 
 
-CREATE SEQUENCE job_types_type_id_seq;
 CREATE TABLE job_types(
       type_id integer NOT NULL DEFAULT nextval('job_types_type_id_seq'),
       name character varying(500)[] NOT NULL,
@@ -66,7 +69,6 @@ COMMENT ON TABLE job_types
 
 
 
-CREATE SEQUENCE locations_location_id_seq;
 CREATE TABLE locations(
     location_id integer NOT NULL DEFAULT nextval('locations_location_id_seq'),
     country  character varying(500)[] NOT NULL,
@@ -79,7 +81,6 @@ CREATE TABLE locations(
 COMMENT ON TABLE locations
     IS 'Таблица локаций, вкакнсий и резюме.';
 
-CREATE SEQUENCE job_properties_property_id_seq;
 CREATE TABLE job_properties
 (
     property_id integer NOT NULL DEFAULT nextval('job_properties_property_id_seq'),
@@ -101,7 +102,6 @@ CREATE TABLE job_properties
         ON DELETE NO ACTION
 );
 
-CREATE SEQUENCE companies_company_id_seq;
 CREATE TABLE companies
 (
     company_id integer NOT NULL DEFAULT nextval('companies_company_id_seq'),
@@ -113,7 +113,6 @@ COMMENT ON TABLE companies
 
 
 
-CREATE SEQUENCE vacancies_vacancy_id_seq;
 CREATE TABLE vacancies
 (
     vacancy_id integer NOT NULL DEFAULT nextval('vacancies_vacancy_id_seq'),
@@ -135,7 +134,6 @@ COMMENT ON TABLE vacancies
 
 
 
-CREATE SEQUENCE users_user_id_seq;
 CREATE TABLE users
 (
     user_id integer NOT NULL DEFAULT nextval('users_user_id_seq'),
@@ -149,7 +147,6 @@ COMMENT ON TABLE users
 
 
 
-CREATE SEQUENCE applicants_applicant_id_seq;
 CREATE TABLE applicants
 (
     applicant_id integer NOT NULL DEFAULT nextval('applicants_applicant_id_seq'),
@@ -166,7 +163,6 @@ COMMENT ON TABLE applicants
 
 
 
-CREATE SEQUENCE resumes_resume_id_seq;
 CREATE TABLE resumes
 (
     resume_id integer NOT NULL DEFAULT nextval('resumes_resume_id_seq'),
@@ -188,7 +184,6 @@ COMMENT ON TABLE resumes
 
 
 
-CREATE SEQUENCE employers_employer_id_seq;
 CREATE TABLE employers
 (
     employer_id integer NOT NULL DEFAULT nextval('employers_employer_id_seq'),
