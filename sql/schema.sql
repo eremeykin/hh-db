@@ -140,7 +140,7 @@ CREATE TABLE users
     family_name character varying(500) NOT NULL,
     patronymic character varying(500),
     contact_email character varying(500),
-    contact_phone integer NOT NULL,
+    contact_phone bigint,
     CONSTRAINT users_user_id_pkey PRIMARY KEY (user_id)
 );
 
