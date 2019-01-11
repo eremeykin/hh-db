@@ -1,0 +1,2 @@
+INSERT INTO types (name)
+VALUES  ('FULL-TIME'),('PART-TIME');
