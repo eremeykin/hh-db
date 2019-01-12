@@ -5,33 +5,15 @@ DROP TABLE IF EXISTS resumes;
 DROP TABLE IF EXISTS applicants;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS jobs;
-DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS profiles;
-
-
-
-CREATE TABLE locations(
-    location_id serial PRIMARY KEY,
-    country  varchar(500) NOT NULL,
-    region   varchar(500) NOT NULL,
-    city     varchar(500) NOT NULL,
-    district varchar(500)
-);
-
-COMMENT ON TABLE locations
-    IS 'Таблица локаций.';
 
 
 
 CREATE TABLE jobs
 (
     job_id serial PRIMARY KEY,
-    location_fk integer,
-    salary int8range,
-    CONSTRAINT jobs_location_fk_fkey FOREIGN KEY (location_fk)
-        REFERENCES locations (location_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    city varchar(500) NOT NULL,
+    salary int8range
 );
 
 COMMENT ON TABLE jobs
