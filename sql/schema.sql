@@ -12,7 +12,9 @@ DROP TABLE IF EXISTS profiles;
 CREATE TABLE jobs
 (
     job_id serial PRIMARY KEY,
-    city varchar(500) NOT NULL,
+    title varchar(500),
+    city varchar(500),
+    description varchar(5000) NOT NULL,
     salary int8range
 );
 
@@ -59,7 +61,6 @@ CREATE TABLE users
     password varchar(500) NOT NULL,
     first_name varchar(500) NOT NULL,
     family_name varchar(500) NOT NULL,
-    patronymic varchar(500),
     contact_email varchar(500),
     contact_phone bigint
 );
