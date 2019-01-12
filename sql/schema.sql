@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS profiles;
 
 CREATE TABLE types(
       type_id serial NOT NULL PRIMARY KEY,
-      name character varying(500) NOT NULL
+      name varchar(500) NOT NULL
 );
 
 COMMENT ON TABLE types
@@ -23,10 +23,10 @@ COMMENT ON TABLE types
 
 CREATE TABLE locations(
     location_id serial PRIMARY KEY,
-    country  character varying(500) NOT NULL,
-    region   character varying(500) NOT NULL,
-    city     character varying(500) NOT NULL,
-    district character varying(500)
+    country  varchar(500) NOT NULL,
+    region   varchar(500) NOT NULL,
+    city     varchar(500) NOT NULL,
+    district varchar(500)
 );
 
 COMMENT ON TABLE locations
@@ -58,7 +58,7 @@ COMMENT ON TABLE jobs
 CREATE TABLE companies
 (
     company_id serial PRIMARY KEY,
-    name character varying(500) NOT NULL
+    name varchar(500) NOT NULL
 );
 
 COMMENT ON TABLE companies
@@ -89,12 +89,12 @@ COMMENT ON TABLE vacancies
 CREATE TABLE users
 (
     user_id serial PRIMARY KEY,
-    login character varying(500) UNIQUE NOT NULL,
-    password character varying(500) NOT NULL,
-    first_name character varying(500) NOT NULL,
-    family_name character varying(500) NOT NULL,
-    patronymic character varying(500),
-    contact_email character varying(500),
+    login varchar(500) UNIQUE NOT NULL,
+    password varchar(500) NOT NULL,
+    first_name varchar(500) NOT NULL,
+    family_name varchar(500) NOT NULL,
+    patronymic varchar(500),
+    contact_email varchar(500),
     contact_phone bigint
 );
 
