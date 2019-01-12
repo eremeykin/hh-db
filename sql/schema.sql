@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS suggestions;
+DROP TABLE IF EXISTS responses;
 DROP TABLE IF EXISTS employers;
 DROP TABLE IF EXISTS vacancies;
 DROP TABLE IF EXISTS companies;
@@ -88,7 +90,7 @@ COMMENT ON TABLE applicants
 CREATE TABLE resumes
 (
     resume_id serial PRIMARY KEY,
-    applicant_fk integer UNIQUE NOT NULL,
+    applicant_fk integer NOT NULL,
     job_fk integer,
     CONSTRAINT resumes_resume_fk_fkey FOREIGN KEY (applicant_fk)
         REFERENCES applicants (applicant_id) MATCH SIMPLE
@@ -122,3 +124,43 @@ CREATE TABLE employers
 
 COMMENT ON TABLE employers
     IS 'Таблица работодателей, которые могут размещать вакансии.';
+
+
+
+CREATE TABLE suggestions
+(
+    suggestion_id serial PRIMARY KEY,
+    resume_fk integer NOT NULL,
+    employer_fk integer NOT NULL,
+    vacancy_fk integer NOT NULL,
+    message varchar(2000),
+    CONSTRAINT suggestion_resume_fk_fkey FOREIGN KEY (resume_fk)
+        REFERENCES resumes (resume_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT suggestion_employer_fk_fkey FOREIGN KEY (employer_fk)
+        REFERENCES employers (employer_id)  MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT suggestion_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
+        REFERENCES vacancies (vacancy_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+
+CREATE TABLE responses
+(
+    response_id serial PRIMARY KEY,
+    vacancy_fk integer NOT NULL,
+    appliсant_fk integer NOT NULL,
+    message varchar(2000),
+    CONSTRAINT responses_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
+        REFERENCES vacancies (vacancy_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT responses_appliсant_fk_fkey  FOREIGN KEY (appliсant_fk)
+        REFERENCES applicants (applicant_id)  MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
