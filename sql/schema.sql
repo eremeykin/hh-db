@@ -6,18 +6,7 @@ DROP TABLE IF EXISTS applicants;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS jobs;
 DROP TABLE IF EXISTS locations;
-DROP TABLE IF EXISTS types;
 DROP TABLE IF EXISTS profiles;
-
-
-
-CREATE TABLE types(
-      type_id serial NOT NULL PRIMARY KEY,
-      name varchar(500) NOT NULL
-);
-
-COMMENT ON TABLE types
-    IS 'Таблица типов работы (полная,частичная занятость).';
 
 
 
@@ -38,14 +27,9 @@ CREATE TABLE jobs
 (
     job_id serial PRIMARY KEY,
     location_fk integer,
-    type_fk integer,
     salary int8range,
     CONSTRAINT jobs_location_fk_fkey FOREIGN KEY (location_fk)
         REFERENCES locations (location_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT jobs_type_fk_fkey FOREIGN KEY (type_fk)
-        REFERENCES types (type_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
