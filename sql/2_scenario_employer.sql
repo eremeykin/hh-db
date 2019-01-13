@@ -17,7 +17,7 @@ WITH insert_company AS (
     )
 UPDATE employers SET
         company_fk = (SELECT company_id from insert_company)
-WHERE user_fk = (SELECT user_id FROM users WHERE login = 'ruskuk@yandex.ru');
+WHERE user_fk = (SELECT user_id FROM users WHERE login = 'kukushkin@hepi.ru');
 
 
 
@@ -25,6 +25,7 @@ WHERE user_fk = (SELECT user_id FROM users WHERE login = 'ruskuk@yandex.ru');
 SELECT name, first_name, family_name, contact_email, contact_phone FROM companies
 JOIN employers e on companies.company_id = e.company_fk
 JOIN users u on e.user_fk = u.user_id;
+
 
 
 --  Создать вакансию
@@ -40,11 +41,34 @@ FROM insert_job;
 
 
 -- Посмотреть созданные вакансии
-SELECT name, title, city, description, salary FROM vacancies
+SELECT vacancy_id, name, title, city, description, salary FROM vacancies
 JOIN companies ON company_fk = company_id
 JOIN employers ON companies.company_id = employers.company_fk
 JOIN users ON user_fk = user_id
 JOIN jobs ON vacancies.job_fk = jobs.job_id
-WHERE login='ruskuk@yandex.ru';
+WHERE login='kukushkin@hepi.ru';
 
 
+
+-- Предложить вакансию соискателю
+INSERT INTO suggestions (resume_fk, employer_fk, vacancy_fk, message)
+VALUES (4, (SELECT employer_id FROM employers JOIN users ON user_fk = user_id WHERE login='kukushkin@hepi.ru'),
+        6, 'Приглашаем Вас пройти собеседование! Контактный email: kukushkin@hepi.ru'
+           );
+
+SELECT * from applicants JOIN users ON user_fk=user_id
+
+-- Кто-то добавляет ответ на вакансию
+INSERT INTO responses (vacancy_fk, appliсant_fk, message)
+VALUES (6, 4, 'Заинтересован вакансией исследователя в Вашем институте');
+
+
+
+-- Посмотреть ответы на вакансию
+SELECT message, title, name, first_name, family_name, contact_phone, contact_email FROM responses
+JOIN applicants a on responses.appliсant_fk = a.applicant_id
+JOIN users u on a.user_fk = u.user_id
+JOIN vacancies v on responses.vacancy_fk = v.vacancy_id
+JOIN jobs j on v.job_fk = j.job_id
+JOIN companies c2 on v.company_fk = c2.company_id
+WHERE c2.company_id = 4;
