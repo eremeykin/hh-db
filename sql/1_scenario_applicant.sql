@@ -76,7 +76,7 @@ WHERE jobs.job_id = delete_resume.job_fk;
 
 
 
--- Заново создаем резюме, оно ещё понадобится
+-- Вернем резюме обратно
 WITH insert_job AS (
         INSERT INTO jobs (title, city, description, salary)
         VALUES ('Инженер', 'Москва','Большой опыт работы. Сооснователь компании PayPal; основатель, совладелец, генеральный директор и главный инженер компании SpaceX; генеральный директор и Chief Product Architect компании Tesla; был членом совета директоров компании SolarCity до её слияния с Tesla.',
@@ -94,22 +94,22 @@ FROM insert_job;
 
 
 
--- Откликнемся на вакансию инженера-конструктора в Москве
+-- Откликнуться на вакансию
 INSERT INTO responses(vacancy_fk, appliсant_fk, message)
 VALUES (5, (SELECT applicant_id FROM applicants JOIN users ON user_fk = user_id WHERE login='elon@musk.com'),
 'Здравствуйте, меня заинтересовала вакансия инженера ЦПИР в Москве, я монго работал над созданием очень сложных систем управления для космической техники.');
 
 
 
--- В это время нам предлагают работать технологом в том же ЦПИР
+-- Пришло предложение
 INSERT INTO suggestions (resume_fk, employer_fk, vacancy_fk, message)
 VALUES (4, 3, 5,
 'Предлагаем вам пройти собеседование на должность технолга в Центр перспективных инженерных разработок.');
 
 
 
--- Посмотреть список предложений для нас
-SELECT companies.name, euser.first_name, euser.family_name, euser.contact_phone, euser.contact_email, message FROM suggestions
+-- Посмотреть список предложений
+SELECT companies.name, title, euser.first_name, euser.family_name, euser.contact_phone, euser.contact_email, message FROM suggestions
          JOIN resumes ON resume_fk = resume_id
          JOIN applicants ON applicant_fk = applicant_id
          JOIN users auser ON user_fk = user_id
@@ -117,4 +117,5 @@ SELECT companies.name, euser.first_name, euser.family_name, euser.contact_phone,
          JOIN companies ON company_fk = company_id
          JOIN employers ON employer_fk = employer_id
          JOIN users euser on employers.user_fk = euser.user_id
+         JOIN jobs on resumes.job_fk = jobs.job_id
 WHERE auser.login='elon@musk.com';
