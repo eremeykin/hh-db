@@ -111,7 +111,7 @@ CREATE TABLE employers
 (
     employer_id serial PRIMARY KEY,
     user_fk integer UNIQUE NOT NULL,
-    company_fk integer NOT NULL,
+    company_fk integer,
     CONSTRAINT employer_user_fk_fkey FOREIGN KEY (user_fk)
         REFERENCES users (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
