@@ -1,4 +1,7 @@
 # DB-part-1
+
+![ER](https://raw.githubusercontent.com/eremeykin/hh-db/develop/ER.png)
+      
 Как выполнить сценарии
 1) Создать базу как написано в `sql/database.sql`
 2) Создать таблицы, выполнив `sql/schema.sql`
