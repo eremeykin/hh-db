@@ -50,6 +50,14 @@ WHERE login='kukushkin@hepi.ru';
 
 
 
+-- Посмотреть все резюме
+SELECT first_name, family_name, contact_email, contact_phone, title, city, description FROM resumes
+JOIN applicants ON applicant_fk = applicant_id
+JOIN users ON user_fk = user_id
+JOIN jobs ON job_fk = job_id;
+
+
+
 -- Предложить вакансию соискателю
 INSERT INTO suggestions (resume_fk, employer_fk, vacancy_fk, message)
 VALUES (4, (SELECT employer_id FROM employers JOIN users ON user_fk = user_id WHERE login='kukushkin@hepi.ru'),

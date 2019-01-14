@@ -94,6 +94,13 @@ FROM insert_job;
 
 
 
+-- Посмотреть все вакансии
+SELECT name, title, city, description,salary FROM vacancies
+JOIN companies ON company_fk = company_id
+JOIN jobs ON job_fk = job_id;
+
+
+
 -- Откликнуться на вакансию
 INSERT INTO responses(vacancy_fk, appliсant_fk, message)
 VALUES (5, (SELECT applicant_id FROM applicants JOIN users ON user_fk = user_id WHERE login='elon@musk.com'),
