@@ -1,16 +1,16 @@
-DROP TABLE IF EXISTS suggestions;
-DROP TABLE IF EXISTS responses;
-DROP TABLE IF EXISTS employers;
-DROP TABLE IF EXISTS vacancies;
-DROP TABLE IF EXISTS companies;
-DROP TABLE IF EXISTS resumes;
-DROP TABLE IF EXISTS applicants;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS suggestion;
+DROP TABLE IF EXISTS response;
+DROP TABLE IF EXISTS employer;
+DROP TABLE IF EXISTS vacancy;
+DROP TABLE IF EXISTS company;
+DROP TABLE IF EXISTS resume;
+DROP TABLE IF EXISTS applicant;
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS job;
 
 
 
-CREATE TABLE jobs
+CREATE TABLE job
 (
     job_id serial PRIMARY KEY,
     title varchar(500),
@@ -19,45 +19,45 @@ CREATE TABLE jobs
     salary int8range
 );
 
-COMMENT ON TABLE jobs
+COMMENT ON TABLE job
     IS 'Таблица описания работы';
 
 
 
-CREATE TABLE companies
+CREATE TABLE company
 (
     company_id serial PRIMARY KEY,
     name varchar(500) NOT NULL
 );
 
-COMMENT ON TABLE companies
+COMMENT ON TABLE company
     IS 'Таблица компаний, от лица которых работодатель размещает вакансию.';
 
 
 
-CREATE TABLE vacancies
+CREATE TABLE vacancy
 (
     vacancy_id serial PRIMARY KEY,
     company_fk integer NOT NULL,
     job_fk integer,
-    CONSTRAINT vacancies_company_fk_fkey FOREIGN KEY (company_fk)
-        REFERENCES companies (company_id) MATCH SIMPLE
+    CONSTRAINT vacancy_company_fk_fkey FOREIGN KEY (company_fk)
+        REFERENCES company (company_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT vacancies_job_fk_fkey FOREIGN KEY (job_fk)
-        REFERENCES jobs (job_id) MATCH SIMPLE
+    CONSTRAINT vacancy_job_fk_fkey FOREIGN KEY (job_fk)
+        REFERENCES job (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-COMMENT ON TABLE vacancies
+COMMENT ON TABLE vacancy
     IS 'Таблица вакансий, размещенных компаниями.';
 
 
 
-CREATE TABLE users
+CREATE TABLE account
 (
-    user_id serial PRIMARY KEY,
+    account_id serial PRIMARY KEY,
     login varchar(500) UNIQUE NOT NULL,
     password varchar(500) NOT NULL,
     first_name varchar(500) NOT NULL,
@@ -66,67 +66,67 @@ CREATE TABLE users
     contact_phone bigint
 );
 
-COMMENT ON TABLE users
+COMMENT ON TABLE account
     IS 'Таблица пользователей, которые могут залогиниться на сайт.';
 
 
 
-CREATE TABLE applicants
+CREATE TABLE applicant
 (
     applicant_id serial PRIMARY KEY,
-    user_fk integer UNIQUE NOT NULL,
-    CONSTRAINT applicants_user_fk_fkey FOREIGN KEY (user_fk)
-        REFERENCES users (user_id) MATCH SIMPLE
+    account_fk integer UNIQUE NOT NULL,
+    CONSTRAINT applicant_account_fk_fkey FOREIGN KEY (account_fk)
+        REFERENCES account (account_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-COMMENT ON TABLE applicants
+COMMENT ON TABLE applicant
     IS 'Таблица соискателей, которые могут создавать резюме.';
 
 
 
-CREATE TABLE resumes
+CREATE TABLE resume
 (
     resume_id serial PRIMARY KEY,
     applicant_fk integer NOT NULL,
     job_fk integer,
-    CONSTRAINT resumes_resume_fk_fkey FOREIGN KEY (applicant_fk)
-        REFERENCES applicants (applicant_id) MATCH SIMPLE
+    CONSTRAINT resume_resume_fk_fkey FOREIGN KEY (applicant_fk)
+        REFERENCES applicant (applicant_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT resumes_job_fk_fkey FOREIGN KEY (job_fk)
-        REFERENCES jobs (job_id) MATCH SIMPLE
+    CONSTRAINT resume_job_fk_fkey FOREIGN KEY (job_fk)
+        REFERENCES job (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-COMMENT ON TABLE resumes
+COMMENT ON TABLE resume
     IS 'Таблица резюме, которые создаются соискателями.';
 
 
 
-CREATE TABLE employers
+CREATE TABLE employer
 (
     employer_id serial PRIMARY KEY,
-    user_fk integer UNIQUE NOT NULL,
+    account_fk integer UNIQUE NOT NULL,
     company_fk integer,
-    CONSTRAINT employer_user_fk_fkey FOREIGN KEY (user_fk)
-        REFERENCES users (user_id) MATCH SIMPLE
+    CONSTRAINT employer_account_fk_fkey FOREIGN KEY (account_fk)
+        REFERENCES account (account_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT employer_company_fk_fkey FOREIGN KEY (company_fk)
-        REFERENCES companies (company_id) MATCH SIMPLE
+        REFERENCES company (company_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
-COMMENT ON TABLE employers
+COMMENT ON TABLE employer
     IS 'Таблица работодателей, которые могут размещать вакансии.';
 
 
 
-CREATE TABLE suggestions
+CREATE TABLE suggestion
 (
     suggestion_id serial PRIMARY KEY,
     resume_fk integer NOT NULL,
@@ -134,32 +134,32 @@ CREATE TABLE suggestions
     vacancy_fk integer NOT NULL,
     message varchar(2000),
     CONSTRAINT suggestion_resume_fk_fkey FOREIGN KEY (resume_fk)
-        REFERENCES resumes (resume_id) MATCH SIMPLE
+        REFERENCES resume (resume_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT suggestion_employer_fk_fkey FOREIGN KEY (employer_fk)
-        REFERENCES employers (employer_id)  MATCH SIMPLE
+        REFERENCES employer (employer_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT suggestion_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
-        REFERENCES vacancies (vacancy_id) MATCH SIMPLE
+        REFERENCES vacancy (vacancy_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
 
 
-CREATE TABLE responses
+CREATE TABLE response
 (
     response_id serial PRIMARY KEY,
     vacancy_fk integer NOT NULL,
     appliсant_fk integer NOT NULL,
     message varchar(2000),
-    CONSTRAINT responses_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
-        REFERENCES vacancies (vacancy_id) MATCH SIMPLE
+    CONSTRAINT response_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
+        REFERENCES vacancy (vacancy_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT responses_appliсant_fk_fkey  FOREIGN KEY (appliсant_fk)
-        REFERENCES applicants (applicant_id)  MATCH SIMPLE
+    CONSTRAINT response_appliсant_fk_fkey  FOREIGN KEY (appliсant_fk)
+        REFERENCES applicant (applicant_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
