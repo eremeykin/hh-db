@@ -12,10 +12,10 @@ VALUES ('OOO "Дракон"'),
        ('Центр перспективных инженерных разработок');
 
 
-INSERT INTO applicant (account_fk)
+INSERT INTO applicant (account_id)
 VALUES (1),(3),(5);
 
-INSERT INTO employer (account_fk, company_fk)
+INSERT INTO employer (account_id, company_id)
 VALUES (2,1), (4,2), (6, 3);
 
 INSERT INTO job (title, city, description, salary)
@@ -29,15 +29,15 @@ VALUES ('Электрик', 'Н. Новгород', 'В компанию тре�
        ('Технолог', 'Москва', 'В Московский филиал центра перспективных инженерных разработок (ЦПИР) требуется технолог для расчета режимов обработки деталей сложной конфигурации', '[300000,370000]');
 
 
-INSERT INTO vacancy (company_fk, job_fk)
+INSERT INTO vacancy (company_id, job_id)
 VALUES (2,1), (2,2), (1,3),(1,6), (3,7);
 
-INSERT INTO resume (applicant_fk, job_fk)
+INSERT INTO resume (applicant_id, job_id)
 VALUES (3,4), (2,5);
 
-INSERT INTO suggestion (resume_fk, employer_fk, vacancy_fk, message)
+INSERT INTO suggestion (resume_id, employer_id, vacancy_id, message)
 VALUES (2, 2, 1, 'Предлагаю Вам работу электрика в нашей компании');
 
 
-INSERT INTO response(vacancy_fk, appliсant_fk, message)
+INSERT INTO response(vacancy_id, applicant_id, message)
 VALUES (3, 2, 'Меня заинтересовала Ваша вакансия зоолога в Иркутске. У меня большой опыт работы с различными пресмыкающимися.');

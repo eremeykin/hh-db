@@ -38,13 +38,13 @@ COMMENT ON TABLE company
 CREATE TABLE vacancy
 (
     vacancy_id serial PRIMARY KEY,
-    company_fk integer NOT NULL,
-    job_fk integer,
-    CONSTRAINT vacancy_company_fk_fkey FOREIGN KEY (company_fk)
+    company_id integer NOT NULL,
+    job_id integer,
+    CONSTRAINT vacancy_company_id_fkey FOREIGN KEY (company_id)
         REFERENCES company (company_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT vacancy_job_fk_fkey FOREIGN KEY (job_fk)
+    CONSTRAINT vacancy_job_id_fkey FOREIGN KEY (job_id)
         REFERENCES job (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -74,8 +74,8 @@ COMMENT ON TABLE account
 CREATE TABLE applicant
 (
     applicant_id serial PRIMARY KEY,
-    account_fk integer UNIQUE NOT NULL,
-    CONSTRAINT applicant_account_fk_fkey FOREIGN KEY (account_fk)
+    account_id integer UNIQUE NOT NULL,
+    CONSTRAINT applicant_account_id_fkey FOREIGN KEY (account_id)
         REFERENCES account (account_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -89,13 +89,13 @@ COMMENT ON TABLE applicant
 CREATE TABLE resume
 (
     resume_id serial PRIMARY KEY,
-    applicant_fk integer NOT NULL,
-    job_fk integer,
-    CONSTRAINT resume_resume_fk_fkey FOREIGN KEY (applicant_fk)
+    applicant_id integer NOT NULL,
+    job_id integer,
+    CONSTRAINT resume_resume_id_fkey FOREIGN KEY (applicant_id)
         REFERENCES applicant (applicant_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT resume_job_fk_fkey FOREIGN KEY (job_fk)
+    CONSTRAINT resume_job_id_fkey FOREIGN KEY (job_id)
         REFERENCES job (job_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -109,13 +109,13 @@ COMMENT ON TABLE resume
 CREATE TABLE employer
 (
     employer_id serial PRIMARY KEY,
-    account_fk integer UNIQUE NOT NULL,
-    company_fk integer,
-    CONSTRAINT employer_account_fk_fkey FOREIGN KEY (account_fk)
+    account_id integer UNIQUE NOT NULL,
+    company_id integer,
+    CONSTRAINT employer_account_id_fkey FOREIGN KEY (account_id)
         REFERENCES account (account_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT employer_company_fk_fkey FOREIGN KEY (company_fk)
+    CONSTRAINT employer_company_id_fkey FOREIGN KEY (company_id)
         REFERENCES company (company_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -129,19 +129,19 @@ COMMENT ON TABLE employer
 CREATE TABLE suggestion
 (
     suggestion_id serial PRIMARY KEY,
-    resume_fk integer NOT NULL,
-    employer_fk integer NOT NULL,
-    vacancy_fk integer NOT NULL,
+    resume_id integer NOT NULL,
+    employer_id integer NOT NULL,
+    vacancy_id integer NOT NULL,
     message varchar(2000),
-    CONSTRAINT suggestion_resume_fk_fkey FOREIGN KEY (resume_fk)
+    CONSTRAINT suggestion_resume_id_fkey FOREIGN KEY (resume_id)
         REFERENCES resume (resume_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT suggestion_employer_fk_fkey FOREIGN KEY (employer_fk)
+    CONSTRAINT suggestion_employer_id_fkey FOREIGN KEY (employer_id)
         REFERENCES employer (employer_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT suggestion_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
+    CONSTRAINT suggestion_vacancy_id_fkey  FOREIGN KEY (vacancy_id)
         REFERENCES vacancy (vacancy_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
@@ -151,14 +151,14 @@ CREATE TABLE suggestion
 CREATE TABLE response
 (
     response_id serial PRIMARY KEY,
-    vacancy_fk integer NOT NULL,
-    appliсant_fk integer NOT NULL,
+    vacancy_id integer NOT NULL,
+    applicant_id integer NOT NULL,
     message varchar(2000),
-    CONSTRAINT response_vacancy_fk_fkey  FOREIGN KEY (vacancy_fk)
+    CONSTRAINT response_vacancy_id_fkey  FOREIGN KEY (vacancy_id)
         REFERENCES vacancy (vacancy_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT response_appliсant_fk_fkey  FOREIGN KEY (appliсant_fk)
+    CONSTRAINT response_applicant_id_fkey  FOREIGN KEY (applicant_id)
         REFERENCES applicant (applicant_id)  MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
