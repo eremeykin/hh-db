@@ -38,16 +38,8 @@ COMMENT ON TABLE company
 CREATE TABLE vacancy
 (
     vacancy_id serial PRIMARY KEY,
-    company_id integer NOT NULL,
-    job_id integer,
-    CONSTRAINT vacancy_company_id_fkey FOREIGN KEY (company_id)
-        REFERENCES company (company_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT vacancy_job_id_fkey FOREIGN KEY (job_id)
-        REFERENCES job (job_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    company_id integer NOT NULL REFERENCES company (company_id),
+    job_id integer REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE vacancy
@@ -74,11 +66,7 @@ COMMENT ON TABLE account
 CREATE TABLE applicant
 (
     applicant_id serial PRIMARY KEY,
-    account_id integer UNIQUE NOT NULL,
-    CONSTRAINT applicant_account_id_fkey FOREIGN KEY (account_id)
-        REFERENCES account (account_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    account_id integer UNIQUE NOT NULL REFERENCES account (account_id)
 );
 
 COMMENT ON TABLE applicant
@@ -89,16 +77,8 @@ COMMENT ON TABLE applicant
 CREATE TABLE resume
 (
     resume_id serial PRIMARY KEY,
-    applicant_id integer NOT NULL,
-    job_id integer,
-    CONSTRAINT resume_resume_id_fkey FOREIGN KEY (applicant_id)
-        REFERENCES applicant (applicant_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT resume_job_id_fkey FOREIGN KEY (job_id)
-        REFERENCES job (job_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    applicant_id integer NOT NULL REFERENCES applicant (applicant_id),
+    job_id integer REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE resume
@@ -109,16 +89,8 @@ COMMENT ON TABLE resume
 CREATE TABLE employer
 (
     employer_id serial PRIMARY KEY,
-    account_id integer UNIQUE NOT NULL,
-    company_id integer,
-    CONSTRAINT employer_account_id_fkey FOREIGN KEY (account_id)
-        REFERENCES account (account_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT employer_company_id_fkey FOREIGN KEY (company_id)
-        REFERENCES company (company_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    account_id integer UNIQUE NOT NULL REFERENCES account (account_id),
+    company_id integer REFERENCES company (company_id)
 );
 
 COMMENT ON TABLE employer
@@ -129,37 +101,17 @@ COMMENT ON TABLE employer
 CREATE TABLE suggestion
 (
     suggestion_id serial PRIMARY KEY,
-    resume_id integer NOT NULL,
-    employer_id integer NOT NULL,
-    vacancy_id integer NOT NULL,
-    message varchar(2000),
-    CONSTRAINT suggestion_resume_id_fkey FOREIGN KEY (resume_id)
-        REFERENCES resume (resume_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT suggestion_employer_id_fkey FOREIGN KEY (employer_id)
-        REFERENCES employer (employer_id)  MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT suggestion_vacancy_id_fkey  FOREIGN KEY (vacancy_id)
-        REFERENCES vacancy (vacancy_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    resume_id integer NOT NULL REFERENCES resume (resume_id),
+    employer_id integer NOT NULL REFERENCES employer (employer_id),
+    vacancy_id integer NOT NULL  REFERENCES vacancy (vacancy_id),
+    message varchar(2000)
 );
 
 
 CREATE TABLE response
 (
     response_id serial PRIMARY KEY,
-    vacancy_id integer NOT NULL,
-    applicant_id integer NOT NULL,
-    message varchar(2000),
-    CONSTRAINT response_vacancy_id_fkey  FOREIGN KEY (vacancy_id)
-        REFERENCES vacancy (vacancy_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT response_applicant_id_fkey  FOREIGN KEY (applicant_id)
-        REFERENCES applicant (applicant_id)  MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+    vacancy_id integer NOT NULL REFERENCES vacancy (vacancy_id),
+    applicant_id integer NOT NULL REFERENCES applicant (applicant_id),
+    message varchar(2000)
 )
