@@ -34,7 +34,7 @@ WHERE login = 'elon@musk.com';
 -- Создать резюме
 WITH insert_job AS (
         INSERT INTO jobs (title, city, description, salary)
-        VALUES ('Инженер', 'Москва','Большой опыт работы. Сооснователь компании PayPal; основатель, совладелец, генеральный директор и главный инженер компании SpaceX; генеральный директор и Chief Product Architect компании Tesla; был членом совета директоров компании SolarCity до её слияния с Tesla.',
+        VALUES ('Инженер', 'Москва','Большой опыт работы. Сооснователь компании PayPal; основатель, совладелец, генеральный директор и главный инженер компании SpaceX; генеральный директор и Chief Product Architect компании Tesla; был членом совета директоров компании SolarCity.',
                 '[300000, 400000]')
         RETURNING job_id
    )

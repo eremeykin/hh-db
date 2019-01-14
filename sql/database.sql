@@ -9,5 +9,5 @@ CREATE DATABASE bestjobs
 
 
 COMMENT ON DATABASE bestjobs
-    IS 'База данных для моего стартапа. Как HeadHunter, только лучше. В рамках домашнего задания в школе HeadHunter по базам данных.';
+    IS 'Как HeadHunter, только немного лучше (ДЗ по базам данных)';
 
