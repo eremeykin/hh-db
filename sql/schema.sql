@@ -1,5 +1,4 @@
-DROP TABLE IF EXISTS suggestion;
-DROP TABLE IF EXISTS response;
+DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS hr_manager;
 DROP TABLE IF EXISTS vacancy;
 DROP TABLE IF EXISTS company;
@@ -94,24 +93,16 @@ CREATE TABLE hr_manager
 );
 
 COMMENT ON TABLE hr_manager
-    IS 'Таблица работодателей, которые могут размещать вакансии.';
+    IS 'Таблица hr менеджеров компаний, которые могут размещать вакансии.';
 
-
-
-CREATE TABLE suggestion
+CREATE TABLE message
 (
-    suggestion_id serial PRIMARY KEY,
+    message_id serial PRIMARY KEY,
+    account_id integer NOT NULL REFERENCES account (account_id),
+    vacancy_id integer NOT NULL REFERENCES vacancy (vacancy_id),
     resume_id integer NOT NULL REFERENCES resume (resume_id),
-    hr_manager_id integer NOT NULL REFERENCES hr_manager (hr_manager_id),
-    vacancy_id integer NOT NULL  REFERENCES vacancy (vacancy_id),
-    message varchar(2000)
+    text varchar(5000) NOT NULL
 );
 
-
-CREATE TABLE response
-(
-    response_id serial PRIMARY KEY,
-    vacancy_id integer NOT NULL REFERENCES vacancy (vacancy_id),
-    applicant_id integer NOT NULL REFERENCES applicant (applicant_id),
-    message varchar(2000)
-)
+COMMENT ON TABLE  message
+    IS 'Таблица сообщений по паре {вакансия,резюме}';

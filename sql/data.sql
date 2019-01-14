@@ -35,9 +35,6 @@ VALUES (2,1), (2,2), (1,3),(1,6), (3,7);
 INSERT INTO resume (applicant_id, job_id)
 VALUES (3,4), (2,5);
 
-INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
-VALUES (2, 2, 1, 'Предлагаю Вам работу электрика в нашей компании');
-
-
-INSERT INTO response(vacancy_id, applicant_id, message)
-VALUES (3, 2, 'Меня заинтересовала Ваша вакансия зоолога в Иркутске. У меня большой опыт работы с различными пресмыкающимися.');
+INSERT INTO message (account_id, vacancy_id, resume_id, text)
+VALUES (4, 1, 2, 'Предлагаю Вам работу электрика в нашей компании'),
+       (3, 3, 1, 'Меня заинтересовала Ваша вакансия зоолога в Иркутске. У меня большой опыт работы с различными пресмыкающимися.');
