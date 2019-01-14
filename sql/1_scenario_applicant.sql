@@ -10,7 +10,9 @@ SELECT account_id FROM insert_account;
 
 
 -- Залогиниться
-SELECT password FROM account
+SELECT password, account_id, applicant_id, hr_manager_id FROM account
+LEFT JOIN applicant USING (account_id)
+LEFT JOIN hr_manager USING (account_id)
 WHERE login = 'elon@musk.com';
 
 
@@ -21,13 +23,13 @@ UPDATE account SET
     family_name = 'Маск',
     contact_email = 'e.musk@spacex.com',
     contact_phone = 2342355678
-WHERE login = 'elon@musk.com';
+WHERE account_id = 7;
 
 
 
 -- Посмотреть личные данные
 SELECT first_name, family_name, contact_email, contact_phone FROM account
-WHERE login = 'elon@musk.com';
+WHERE account_id = 7;
 
 
 
@@ -39,22 +41,16 @@ WITH insert_job AS (
         RETURNING job_id
    )
 INSERT INTO resume (job_id, applicant_id)
-SELECT job_id, (
-                SELECT applicant_id
-                    FROM applicant
-                    JOIN account USING (account_id)
-                WHERE login='elon@musk.com'
-                )
-FROM insert_job;
+SELECT job_id, 4 FROM insert_job;
 
 
 
 -- Посмотреть резюме
-SELECT first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM job
+SELECT resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM job
     JOIN resume USING (job_id)
     JOIN applicant USING (applicant_id)
     JOIN account USING (account_id)
-WHERE login='elon@musk.com';
+WHERE account_id = 7;
 
 
 
@@ -101,28 +97,22 @@ JOIN job USING (job_id);
 
 
 
--- Откликнуться на вакансию
-INSERT INTO response(vacancy_id, applicant_id, message)
-VALUES (5, (SELECT applicant_id FROM applicant JOIN account USING (account_id) WHERE login='elon@musk.com'),
-'Здравствуйте, меня заинтересовала вакансия инженера ЦПИР в Москве, я монго работал над созданием очень сложных систем управления для космической техники.');
+-- Написать сообщение
+INSERT INTO message (account_id, vacancy_id, resume_id, text)
+VALUES (7, 5, 4, 'Здравствуйте, меня заинтересовала вакансия инженера ЦПИР в Москве, я монго работал над созданием очень сложных систем управления для космической техники.');
 
 
 
--- Пришло предложение
-INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
-VALUES (4, 3, 5,
-'Предлагаем вам пройти собеседование на должность технолга в Центр перспективных инженерных разработок.');
+-- Пришел ответ от hr менеджера
+INSERT INTO message (account_id, vacancy_id, resume_id, text)
+VALUES (6, 5, 4, 'Здравствуйте, приглашаем Вас на собеседование в четверг 15.05 в 16:30.');
 
 
 
--- Посмотреть список предложений
-SELECT company.name, title, eaccount.first_name, eaccount.family_name, eaccount.contact_phone, eaccount.contact_email, message FROM suggestion
-         JOIN resume USING (resume_id)
-         JOIN applicant USING (applicant_id)
-         JOIN account aaccount USING (account_id)
-         JOIN vacancy USING (vacancy_id)
-         JOIN company USING (company_id)
-         JOIN hr_manager USING (hr_manager_id)
-         JOIN account eaccount ON hr_manager.account_id = eaccount.account_id
-         JOIN job ON vacancy.job_id = job.job_id
-WHERE aaccount.login='elon@musk.com';
+-- Посмотреть диалог по резюме 4
+SELECT job.title, hr.first_name || ' ' ||  hr.family_name AS name, text  FROM message
+JOIN account hr USING (account_id)
+JOIN vacancy USING (vacancy_id)
+JOIN resume USING (resume_id)
+JOIN job on resume.job_id = job.job_id
+WHERE resume_id = 4;

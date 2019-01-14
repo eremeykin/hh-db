@@ -9,6 +9,14 @@ SELECT account_id FROM insert_account;
 
 
 
+-- Залогиниться
+SELECT password, account_id, applicant_id, hr_manager_id FROM account
+LEFT JOIN applicant USING (account_id)
+LEFT JOIN hr_manager USING (account_id)
+WHERE login = 'kukushkin@hepi.ru';
+
+
+
 -- Создать компанию
 WITH insert_company AS (
         INSERT INTO company (name)
@@ -17,7 +25,7 @@ WITH insert_company AS (
     )
 UPDATE hr_manager SET
         company_id = (SELECT company_id from insert_company)
-WHERE account_id = (SELECT account_id FROM account WHERE login = 'kukushkin@hepi.ru');
+WHERE account_id = 8;
 
 
 
@@ -46,7 +54,7 @@ JOIN company USING (company_id)
 JOIN hr_manager USING (company_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
-WHERE login='kukushkin@hepi.ru';
+WHERE account_id = 8;
 
 
 
@@ -58,25 +66,23 @@ JOIN job USING (job_id);
 
 
 
--- Предложить вакансию соискателю
-INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
-VALUES (4, (SELECT hr_manager_id FROM hr_manager JOIN account USING (account_id)  WHERE login='kukushkin@hepi.ru'),
-        6, 'Приглашаем Вас пройти собеседование! Контактный email: kukushkin@hepi.ru'
-           );
+-- Написать сообщение соискателю
+INSERT INTO message (account_id, vacancy_id, resume_id, text)
+VALUES (8, 6, 4, 'Здравствуйте, приглашаем Вас пройти собеседование на должность исследователя!');
 
 
 
--- Кто-то добавляет ответ на вакансию
-INSERT INTO response (vacancy_id, applicant_id, message)
-VALUES (6, 4, 'Заинтересован вакансией исследователя в Вашем институте');
+-- Пришел ответ от соискателя
+INSERT INTO message (account_id, vacancy_id, resume_id, text)
+VALUES (7, 6, 4, 'Здравствуйте, меня устроит любое время в ближайший вторник или среду.');
 
 
 
--- Посмотреть ответы на вакансию
-SELECT message, title, name, first_name, family_name, contact_phone, contact_email FROM response
-JOIN applicant USING (applicant_id)
-JOIN account USING (account_id)
+-- Посмотреть диалог по вакансии 6
+SELECT job.title, hr.first_name || ' ' ||  hr.family_name AS name, text  FROM message
+JOIN account hr USING (account_id)
 JOIN vacancy USING (vacancy_id)
-JOIN job USING (job_id)
-JOIN company USING (company_id)
-WHERE company_id = 4;
+JOIN resume USING (resume_id)
+JOIN job on resume.job_id = job.job_id
+WHERE vacancy_id = 6;
+
