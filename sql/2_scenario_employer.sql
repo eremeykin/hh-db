@@ -4,7 +4,7 @@ WITH insert_account AS (
         VALUES ('kukushkin@hepi.ru', 'id6AWf3g', 'Руслан', 'Кукушкин', 'kukushkin@hepi.ru', 71354572398)
         RETURNING account_id
    )
-INSERT INTO employer (account_id)
+INSERT INTO hr_manager (account_id)
 SELECT account_id FROM insert_account;
 
 
@@ -15,7 +15,7 @@ WITH insert_company AS (
         VALUES ('Институт физики высоких энергий')
         RETURNING company_id
     )
-UPDATE employer SET
+UPDATE hr_manager SET
         company_id = (SELECT company_id from insert_company)
 WHERE account_id = (SELECT account_id FROM account WHERE login = 'kukushkin@hepi.ru');
 
@@ -23,7 +23,7 @@ WHERE account_id = (SELECT account_id FROM account WHERE login = 'kukushkin@hepi
 
 --Посмотреть компании
 SELECT name, first_name, family_name, contact_email, contact_phone FROM company
-JOIN employer USING (company_id)
+JOIN hr_manager USING (company_id)
 JOIN account USING (account_id);
 
 
@@ -43,7 +43,7 @@ FROM insert_job;
 -- Посмотреть созданные вакансии
 SELECT vacancy_id, name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
-JOIN employer USING (company_id)
+JOIN hr_manager USING (company_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
 WHERE login='kukushkin@hepi.ru';
@@ -59,8 +59,8 @@ JOIN job USING (job_id);
 
 
 -- Предложить вакансию соискателю
-INSERT INTO suggestion (resume_id, employer_id, vacancy_id, message)
-VALUES (4, (SELECT employer_id FROM employer JOIN account USING (account_id)  WHERE login='kukushkin@hepi.ru'),
+INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
+VALUES (4, (SELECT hr_manager_id FROM hr_manager JOIN account USING (account_id)  WHERE login='kukushkin@hepi.ru'),
         6, 'Приглашаем Вас пройти собеседование! Контактный email: kukushkin@hepi.ru'
            );
 

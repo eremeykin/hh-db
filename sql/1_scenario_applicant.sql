@@ -109,7 +109,7 @@ VALUES (5, (SELECT applicant_id FROM applicant JOIN account USING (account_id) W
 
 
 -- Пришло предложение
-INSERT INTO suggestion (resume_id, employer_id, vacancy_id, message)
+INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
 VALUES (4, 3, 5,
 'Предлагаем вам пройти собеседование на должность технолга в Центр перспективных инженерных разработок.');
 
@@ -122,7 +122,7 @@ SELECT company.name, title, eaccount.first_name, eaccount.family_name, eaccount.
          JOIN account aaccount USING (account_id)
          JOIN vacancy USING (vacancy_id)
          JOIN company USING (company_id)
-         JOIN employer USING (employer_id)
-         JOIN account eaccount ON employer.account_id = eaccount.account_id
+         JOIN hr_manager USING (hr_manager_id)
+         JOIN account eaccount ON hr_manager.account_id = eaccount.account_id
          JOIN job ON vacancy.job_id = job.job_id
 WHERE aaccount.login='elon@musk.com';

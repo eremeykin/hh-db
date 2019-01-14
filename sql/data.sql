@@ -15,7 +15,7 @@ VALUES ('OOO "Дракон"'),
 INSERT INTO applicant (account_id)
 VALUES (1),(3),(5);
 
-INSERT INTO employer (account_id, company_id)
+INSERT INTO hr_manager (account_id, company_id)
 VALUES (2,1), (4,2), (6, 3);
 
 INSERT INTO job (title, city, description, salary)
@@ -35,7 +35,7 @@ VALUES (2,1), (2,2), (1,3),(1,6), (3,7);
 INSERT INTO resume (applicant_id, job_id)
 VALUES (3,4), (2,5);
 
-INSERT INTO suggestion (resume_id, employer_id, vacancy_id, message)
+INSERT INTO suggestion (resume_id, hr_manager_id, vacancy_id, message)
 VALUES (2, 2, 1, 'Предлагаю Вам работу электрика в нашей компании');
 
 
