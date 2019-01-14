@@ -124,5 +124,5 @@ SELECT companies.name, title, euser.first_name, euser.family_name, euser.contact
          JOIN companies ON company_fk = company_id
          JOIN employers ON employer_fk = employer_id
          JOIN users euser on employers.user_fk = euser.user_id
-         JOIN jobs on resumes.job_fk = jobs.job_id
+         JOIN jobs on vacancies.job_fk = jobs.job_id
 WHERE auser.login='elon@musk.com';

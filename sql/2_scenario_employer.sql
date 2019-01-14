@@ -64,7 +64,7 @@ VALUES (4, (SELECT employer_id FROM employers JOIN users ON user_fk = user_id WH
         6, 'Приглашаем Вас пройти собеседование! Контактный email: kukushkin@hepi.ru'
            );
 
-SELECT * from applicants JOIN users ON user_fk=user_id
+
 
 -- Кто-то добавляет ответ на вакансию
 INSERT INTO responses (vacancy_fk, appliсant_fk, message)

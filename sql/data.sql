@@ -33,7 +33,7 @@ INSERT INTO vacancies (company_fk, job_fk)
 VALUES (2,1), (2,2), (1,3),(1,6), (3,7);
 
 INSERT INTO resumes (applicant_fk, job_fk)
-VALUES (3,4), (3,5);
+VALUES (3,4), (2,5);
 
 INSERT INTO suggestions (resume_fk, employer_fk, vacancy_fk, message)
 VALUES (2, 2, 1, 'Предлагаю Вам работу электрика в нашей компании');
