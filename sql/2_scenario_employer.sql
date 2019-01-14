@@ -83,6 +83,15 @@ JOIN job USING (job_id);
 
 
 
+-- Поиск резюме по городу, названию и зарплате
+SELECT first_name, family_name, contact_email, contact_phone, title, city, description, salary FROM resume
+JOIN applicant USING (applicant_id)
+JOIN account USING (account_id)
+JOIN job USING (job_id)
+WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,410000]';
+
+
+
 -- Написать сообщение соискателю
 INSERT INTO message (account_id, vacancy_id, resume_id, text)
 VALUES (8, 6, 4, 'Здравствуйте, приглашаем Вас пройти собеседование на должность исследователя!');

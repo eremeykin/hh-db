@@ -97,6 +97,14 @@ JOIN job USING (job_id);
 
 
 
+-- Поиск вакансии по городу и названию и чтоб платили много
+SELECT name, title, city, description, salary FROM vacancy
+JOIN company USING (company_id)
+JOIN job USING (job_id)
+WHERE city='Москва' AND title LIKE '%Инженер%' AND salary && '[600000,]';
+
+
+
 -- Написать сообщение
 INSERT INTO message (account_id, vacancy_id, resume_id, text)
 VALUES (7, 5, 4, 'Здравствуйте, меня заинтересовала вакансия инженера ЦПИР в Москве, я монго работал над созданием очень сложных систем управления для космической техники.');
