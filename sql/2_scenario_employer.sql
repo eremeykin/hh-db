@@ -36,6 +36,23 @@ JOIN account USING (account_id);
 
 
 
+-- Зарегистрируем ещё одного hr менеджера, так как в компании их может быть несколько
+WITH insert_account AS (
+        INSERT INTO account (login, password, first_name, family_name, contact_email, contact_phone)
+        VALUES ('ezhikov@mail.ru', 'EzhhIG', 'Артемий', 'Ежиков', 'a.ezhikov@hepi.ru', 71359847532)
+        RETURNING account_id
+   )
+INSERT INTO hr_manager (account_id, company_id)
+SELECT account_id,4 FROM insert_account;
+
+
+
+-- Посмотреть менеджеров компании
+SELECT login, first_name, family_name FROM hr_manager
+JOIN account a on hr_manager.account_id = a.account_id
+WHERE company_id = 4;
+
+
 --  Создать вакансию
 WITH insert_job AS (
     INSERT INTO job (title, city, description, salary)
