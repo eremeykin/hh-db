@@ -60,12 +60,12 @@ WITH insert_job AS (
             '[240000, 260000]')
     RETURNING job_id
     )
-INSERT INTO vacancy (company_id, job_id)
-SELECT 4, job_id
+INSERT INTO vacancy (company_id, job_id, active)
+SELECT 4, job_id, TRUE
 FROM insert_job;
 
 
--- Посмотреть созданные вакансии
+-- Посмотреть созданные вакансии TODO add active
 SELECT vacancy_id, name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
 JOIN hr_manager USING (company_id)
@@ -83,7 +83,7 @@ JOIN job USING (job_id);
 
 
 
--- Поиск резюме по городу, названию и зарплате
+-- Поиск резюме по городу, названию и зарплате TODO add active
 SELECT first_name, family_name, contact_email, contact_phone, title, city, description, salary FROM resume
 JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)

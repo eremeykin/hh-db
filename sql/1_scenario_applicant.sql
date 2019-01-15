@@ -40,12 +40,13 @@ WITH insert_job AS (
                 '[300000, 400000]')
         RETURNING job_id
    )
-INSERT INTO resume (job_id, applicant_id)
-SELECT job_id, 4 FROM insert_job;
+INSERT INTO resume (job_id, applicant_id, active)
+SELECT job_id, 4, TRUE
+FROM insert_job;
 
 
 
--- Посмотреть резюме
+-- Посмотреть резюме TODO add active
 SELECT resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM job
     JOIN resume USING (job_id)
     JOIN applicant USING (applicant_id)
@@ -59,6 +60,9 @@ UPDATE job SET
     salary = '[430000, 520000]'
 WHERE job_id = (SELECT job_id FROM resume WHERE resume_id = 3) ;
 
+
+
+-- TODO add activate/deactivate resume
 
 
 -- Удалить резюме
@@ -79,8 +83,9 @@ WITH insert_job AS (
                 '[400000, 500000]')
         RETURNING job_id
    )
-INSERT INTO resume (job_id, applicant_id)
-SELECT job_id, 4 FROM insert_job;
+INSERT INTO resume (job_id, applicant_id, active)
+SELECT job_id, 4, TRUE
+FROM insert_job;
 
 
 
@@ -91,7 +96,7 @@ JOIN job USING (job_id);
 
 
 
--- Поиск вакансии по городу и названию и чтоб платили много
+-- Поиск вакансии по городу и названию и чтоб платили много TODO add active
 SELECT name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
 JOIN job USING (job_id)
