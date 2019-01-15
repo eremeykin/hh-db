@@ -112,3 +112,16 @@ CREATE TABLE message
 
 COMMENT ON TABLE  message
     IS 'Таблица сообщений по паре {вакансия,резюме}';
+
+
+
+CREATE TABLE read_message
+(
+  read_message_id SERIAL PRIMARY KEY,
+  message_id INTEGER NOT NULL REFERENCES message (message_id),
+  account_id INTEGER NOT NULL REFERENCES account (account_id)
+);
+
+COMMENT ON TABLE  read_message
+    IS 'Таблица отношения прочитанности сообщения пользователем';
+
