@@ -80,13 +80,7 @@ WITH insert_job AS (
         RETURNING job_id
    )
 INSERT INTO resume (job_id, applicant_id)
-SELECT job_id, (
-                SELECT applicant_id
-                    FROM applicant
-                    JOIN account USING (account_id)
-                WHERE login='elon@musk.com'
-                )
-FROM insert_job;
+SELECT job_id, 4 FROM insert_job;
 
 
 
