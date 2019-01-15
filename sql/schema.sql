@@ -37,6 +37,7 @@ COMMENT ON TABLE company
 CREATE TABLE vacancy
 (
     vacancy_id SERIAL PRIMARY KEY,
+    active BOOLEAN NOT NULL, -- add active to vacancy/resume and not to job because it is not a job property according to domain
     company_id INTEGER NOT NULL REFERENCES company (company_id),
     job_id INTEGER REFERENCES job (job_id)
 );
@@ -76,6 +77,7 @@ COMMENT ON TABLE applicant
 CREATE TABLE resume
 (
     resume_id SERIAL PRIMARY KEY,
+    active BOOLEAN NOT NULL, -- add active to vacancy/resume and not to job because it is not a job property according to domain
     applicant_id INTEGER NOT NULL REFERENCES applicant (applicant_id),
     job_id INTEGER REFERENCES job (job_id)
 );

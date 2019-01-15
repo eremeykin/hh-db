@@ -53,6 +53,7 @@ JOIN account USING (account_id)
 WHERE company_id = 4;
 
 
+
 --  Создать вакансию
 WITH insert_job AS (
     INSERT INTO job (title, city, description, salary)
@@ -60,13 +61,14 @@ WITH insert_job AS (
             '[240000, 260000]')
     RETURNING job_id
     )
-INSERT INTO vacancy (company_id, job_id)
-SELECT 4, job_id
+INSERT INTO vacancy (company_id, job_id, active)
+SELECT 4, job_id, TRUE
 FROM insert_job;
 
 
+
 -- Посмотреть созданные вакансии
-SELECT vacancy_id, name, title, city, description, salary FROM vacancy
+SELECT active, vacancy_id, name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
 JOIN hr_manager USING (company_id)
 JOIN account USING (account_id)
@@ -75,11 +77,25 @@ WHERE account_id = 8;
 
 
 
+-- Деактивировать вакансию #6
+UPDATE vacancy SET
+    active = FALSE
+WHERE vacancy_id = 6;
+
+
+
+-- Активировать обратно вакансию #6
+UPDATE vacancy SET
+    active = TRUE
+WHERE vacancy_id = 6;
+
+
 -- Посмотреть все резюме
 SELECT first_name, family_name, contact_email, contact_phone, title, city, description FROM resume
 JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
-JOIN job USING (job_id);
+JOIN job USING (job_id)
+WHERE active;
 
 
 
@@ -88,7 +104,7 @@ SELECT first_name, family_name, contact_email, contact_phone, title, city, descr
 JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
-WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,410000]';
+WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,410000]' AND active;
 
 
 
