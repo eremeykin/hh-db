@@ -49,7 +49,7 @@ SELECT account_id,4 FROM insert_account;
 
 -- Посмотреть менеджеров компании
 SELECT login, first_name, family_name FROM hr_manager
-JOIN account a on hr_manager.account_id = a.account_id
+JOIN account USING (account_id)
 WHERE company_id = 4;
 
 
