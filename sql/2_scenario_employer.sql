@@ -109,14 +109,14 @@ WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,41000
 
 
 -- Написать сообщение соискателю
-INSERT INTO message (account_id, vacancy_id, resume_id, text)
-VALUES (8, 6, 4, 'Здравствуйте, приглашаем Вас пройти собеседование на должность исследователя!');
+INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
+VALUES (8, 6, 4, 'Здравствуйте, приглашаем Вас пройти собеседование на должность исследователя!', '2019-01-25 17:01:58');
 
 
 
--- Пришел ответ от соискателя
-INSERT INTO message (account_id, vacancy_id, resume_id, text)
-VALUES (7, 6, 4, 'Здравствуйте, меня устроит любое время в ближайший вторник или среду.');
+-- Пришел ответ от соискателя через 1 час
+INSERT INTO message (account_id, vacancy_id, resume_id, text , send)
+VALUES (7, 6, 4, 'Здравствуйте, меня устроит любое время в ближайший вторник или среду.', '2019-01-25 18:01:58');
 
 
 
