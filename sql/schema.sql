@@ -11,11 +11,11 @@ DROP TABLE IF EXISTS job;
 
 CREATE TABLE job
 (
-    job_id serial PRIMARY KEY,
-    title varchar(500),
-    city varchar(500),
-    description varchar(5000) NOT NULL,
-    salary int8range
+    job_id SERIAL PRIMARY KEY,
+    title VARCHAR(500),
+    city VARCHAR(500),
+    description VARCHAR(5000) NOT NULL,
+    salary INT8RANGE
 );
 
 COMMENT ON TABLE job
@@ -25,8 +25,8 @@ COMMENT ON TABLE job
 
 CREATE TABLE company
 (
-    company_id serial PRIMARY KEY,
-    name varchar(500) NOT NULL
+    company_id SERIAL PRIMARY KEY,
+    name VARCHAR(500) NOT NULL
 );
 
 COMMENT ON TABLE company
@@ -36,9 +36,9 @@ COMMENT ON TABLE company
 
 CREATE TABLE vacancy
 (
-    vacancy_id serial PRIMARY KEY,
-    company_id integer NOT NULL REFERENCES company (company_id),
-    job_id integer REFERENCES job (job_id)
+    vacancy_id SERIAL PRIMARY KEY,
+    company_id INTEGER NOT NULL REFERENCES company (company_id),
+    job_id INTEGER REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE vacancy
@@ -48,13 +48,13 @@ COMMENT ON TABLE vacancy
 
 CREATE TABLE account
 (
-    account_id serial PRIMARY KEY,
-    login varchar(500) UNIQUE NOT NULL,
-    password varchar(500) NOT NULL,
-    first_name varchar(500) NOT NULL,
-    family_name varchar(500) NOT NULL,
-    contact_email varchar(500),
-    contact_phone bigint
+    account_id SERIAL PRIMARY KEY,
+    login VARCHAR(500) UNIQUE NOT NULL,
+    password VARCHAR(500) NOT NULL,
+    first_name VARCHAR(500) NOT NULL,
+    family_name VARCHAR(500) NOT NULL,
+    contact_email VARCHAR(500),
+    contact_phone BIGINT
 );
 
 COMMENT ON TABLE account
@@ -64,8 +64,8 @@ COMMENT ON TABLE account
 
 CREATE TABLE applicant
 (
-    applicant_id serial PRIMARY KEY,
-    account_id integer UNIQUE NOT NULL REFERENCES account (account_id)
+    applicant_id SERIAL PRIMARY KEY,
+    account_id INTEGER UNIQUE NOT NULL REFERENCES account (account_id)
 );
 
 COMMENT ON TABLE applicant
@@ -75,9 +75,9 @@ COMMENT ON TABLE applicant
 
 CREATE TABLE resume
 (
-    resume_id serial PRIMARY KEY,
-    applicant_id integer NOT NULL REFERENCES applicant (applicant_id),
-    job_id integer REFERENCES job (job_id)
+    resume_id SERIAL PRIMARY KEY,
+    applicant_id INTEGER NOT NULL REFERENCES applicant (applicant_id),
+    job_id INTEGER REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE resume
@@ -87,9 +87,9 @@ COMMENT ON TABLE resume
 
 CREATE TABLE hr_manager
 (
-    hr_manager_id serial PRIMARY KEY,
-    account_id integer UNIQUE NOT NULL REFERENCES account (account_id),
-    company_id integer REFERENCES company (company_id)
+    hr_manager_id SERIAL PRIMARY KEY,
+    account_id INTEGER UNIQUE NOT NULL REFERENCES account (account_id),
+    company_id INTEGER REFERENCES company (company_id)
 );
 
 COMMENT ON TABLE hr_manager
@@ -97,11 +97,11 @@ COMMENT ON TABLE hr_manager
 
 CREATE TABLE message
 (
-    message_id serial PRIMARY KEY,
-    account_id integer NOT NULL REFERENCES account (account_id),
-    vacancy_id integer NOT NULL REFERENCES vacancy (vacancy_id),
-    resume_id integer NOT NULL REFERENCES resume (resume_id),
-    text varchar(5000) NOT NULL
+    message_id SERIAL PRIMARY KEY,
+    account_id INTEGER NOT NULL REFERENCES account (account_id),
+    vacancy_id INTEGER NOT NULL REFERENCES vacancy (vacancy_id),
+    resume_id INTEGER NOT NULL REFERENCES resume (resume_id),
+    text VARCHAR(5000) NOT NULL
 );
 
 COMMENT ON TABLE  message
