@@ -46,12 +46,19 @@ FROM insert_job;
 
 
 
--- Посмотреть резюме TODO add active
-SELECT resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM job
+-- Посмотреть свои резюме
+SELECT active, resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM job
     JOIN resume USING (job_id)
     JOIN applicant USING (applicant_id)
     JOIN account USING (account_id)
 WHERE account_id = 7;
+
+
+
+-- Деактивировать резюме #3
+UPDATE resume SET
+    active = FALSE
+WHERE resume_id = 3;
 
 
 
@@ -62,7 +69,11 @@ WHERE job_id = (SELECT job_id FROM resume WHERE resume_id = 3) ;
 
 
 
--- TODO add activate/deactivate resume
+-- Активировать обратно резюме #3
+UPDATE resume SET
+    active = FALSE
+WHERE resume_id = 3;
+
 
 
 -- Удалить резюме
@@ -92,15 +103,16 @@ FROM insert_job;
 -- Посмотреть все вакансии
 SELECT name, title, city, description,salary FROM vacancy
 JOIN company USING (company_id)
-JOIN job USING (job_id);
+JOIN job USING (job_id)
+WHERE active;
 
 
 
--- Поиск вакансии по городу и названию и чтоб платили много TODO add active
+-- Поиск активных вакансий по городу и названию и чтоб платили много
 SELECT name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
 JOIN job USING (job_id)
-WHERE city='Москва' AND title LIKE '%Инженер%' AND salary && '[600000,]';
+WHERE city='Москва' AND title LIKE '%Инженер%' AND salary && '[600000,]' AND active;
 
 
 
