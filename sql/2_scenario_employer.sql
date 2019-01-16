@@ -128,3 +128,49 @@ JOIN resume USING (resume_id)
 JOIN job on resume.job_id = job.job_id
 WHERE vacancy_id = 6;
 
+
+
+-- Добавить скрытую тестовую вакансию, в которой не будет ни одного сообщения
+WITH insert_job AS (
+    INSERT INTO job (title, city, description, salary)
+    VALUES ('Наладчик', 'Москва','Потом заполню',
+            '[130000, 140000]')
+    RETURNING job_id
+    )
+INSERT INTO vacancy (company_id, job_id, active)
+SELECT 4, job_id, FALSE
+FROM insert_job;
+
+
+
+-- Пришло ещё сообщение
+INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
+VALUES (7, 6, 4, 'Проверка связи', '2019-01-20 18:23:14');
+
+
+
+-- (б) список вакансий моей компании с количествами всех и новых сообщений
+SELECT total_messages, new_messages, active, vacancy_id, title, city, description, salary FROM vacancy
+JOIN
+(SELECT  COUNT(message.message_id) AS total_messages, COUNT(message.message_id) - COUNT(read_message.message_id) AS new_messages, vacancy_id FROM job
+    JOIN vacancy USING (job_id)
+    JOIN company USING (company_id)
+    JOIN hr_manager USING (company_id)
+    JOIN account USING (account_id)
+    LEFT JOIN message  USING (vacancy_id)
+    LEFT JOIN read_message  ON (read_message.account_id = account.account_id AND message.message_id = read_message.message_id)
+WHERE account.account_id = 8 AND (message.account_id != 8 OR message.account_id IS NULL)
+GROUP BY vacancy_id) AS message USING (vacancy_id)
+JOIN job USING (job_id);
+
+
+
+-- прочитать сообщение #7
+INSERT INTO read_message (message_id, account_id)
+VALUES (7,8);
+
+
+
+-- прочитать сообщение #8
+INSERT INTO read_message (message_id, account_id)
+VALUES (8,8);
