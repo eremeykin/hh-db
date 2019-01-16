@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS read_message;
 DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS hr_manager;
 DROP TABLE IF EXISTS vacancy;
@@ -97,9 +98,12 @@ CREATE TABLE hr_manager
 COMMENT ON TABLE hr_manager
     IS 'Таблица hr менеджеров компаний, которые могут размещать вакансии.';
 
+
+
 CREATE TABLE message
 (
     message_id SERIAL PRIMARY KEY,
+    send TIMESTAMP NOT NULL,
     account_id INTEGER NOT NULL REFERENCES account (account_id),
     vacancy_id INTEGER NOT NULL REFERENCES vacancy (vacancy_id),
     resume_id INTEGER NOT NULL REFERENCES resume (resume_id),
@@ -108,3 +112,17 @@ CREATE TABLE message
 
 COMMENT ON TABLE  message
     IS 'Таблица сообщений по паре {вакансия,резюме}';
+
+
+
+CREATE TABLE read_message
+(
+  read_message_id SERIAL PRIMARY KEY,
+  message_id INTEGER NOT NULL REFERENCES message (message_id),
+  account_id INTEGER NOT NULL REFERENCES account (account_id),
+  UNIQUE (message_id, account_id)
+);
+
+COMMENT ON TABLE  read_message
+    IS 'Таблица отношения прочитанности сообщения пользователем';
+
