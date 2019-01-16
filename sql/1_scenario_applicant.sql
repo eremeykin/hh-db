@@ -137,6 +137,7 @@ JOIN job on resume.job_id = job.job_id
 WHERE resume_id = 4;
 
 
+
 -- Добавить скрытое тестовое резюме, в котором не будет ни одного сообщения
 WITH insert_job AS (
         INSERT INTO job (title, city, description, salary)
@@ -155,17 +156,8 @@ INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
 VALUES (6, 5, 4, 'Извините, но в связи с непредвиденными обстоятельствами собеседование переносится на 20.05 в 16:30.', '2019-01-20 15:28:25');
 
 
+
 -- (а) список моих резюме с количеством всех сообщений и количеством новых сообщений
-SELECT COUNT(message_id), resume_id FROM job
-    JOIN resume USING (job_id)
-    JOIN applicant USING (applicant_id)
-    JOIN account USING (account_id)
-    LEFT JOIN message  USING (resume_id)
-WHERE account.account_id = 7 AND (message.account_id != 7 OR message.account_id IS NULL)
-GROUP BY resume_id;
-
-
-
 SELECT total_messages, new_messages, active, resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM resume
 JOIN
 (SELECT  COUNT(message.message_id) AS total_messages, COUNT(message.message_id) - COUNT(read_message.message_id) AS new_messages, resume_id FROM job
