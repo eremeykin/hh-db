@@ -119,7 +119,8 @@ CREATE TABLE read_message
 (
   read_message_id SERIAL PRIMARY KEY,
   message_id INTEGER NOT NULL REFERENCES message (message_id),
-  account_id INTEGER NOT NULL REFERENCES account (account_id)
+  account_id INTEGER NOT NULL REFERENCES account (account_id),
+  UNIQUE (message_id, account_id)
 );
 
 COMMENT ON TABLE  read_message
