@@ -135,3 +135,59 @@ JOIN vacancy USING (vacancy_id)
 JOIN resume USING (resume_id)
 JOIN job on resume.job_id = job.job_id
 WHERE resume_id = 4;
+
+
+-- Добавить скрытое тестовое резюме, в котором не будет ни одного сообщения
+WITH insert_job AS (
+        INSERT INTO job (title, city, description, salary)
+        VALUES ('Разработчик', 'Москва','Умею разрабатывать разные сложные штуки. Потом подробнее напишу.',
+                '[300000, 320000]')
+        RETURNING job_id
+   )
+INSERT INTO resume (job_id, applicant_id, active)
+SELECT job_id, 4, FALSE
+FROM insert_job;
+
+
+
+-- Пришло еще одно сообщение от hr менеджера
+INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
+VALUES (6, 5, 4, 'Извините, но в связи с непредвиденными обстоятельствами собеседование переносится на 20.05 в 16:30.', '2019-01-20 15:28:25');
+
+
+-- (а) список моих резюме с количеством всех сообщений и количеством новых сообщений
+SELECT COUNT(message_id), resume_id FROM job
+    JOIN resume USING (job_id)
+    JOIN applicant USING (applicant_id)
+    JOIN account USING (account_id)
+    LEFT JOIN message  USING (resume_id)
+WHERE account.account_id = 7 AND (message.account_id != 7 OR message.account_id IS NULL)
+GROUP BY resume_id;
+
+
+
+SELECT total_messages, new_messages, active, resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary FROM resume
+JOIN
+(SELECT  COUNT(message.message_id) AS total_messages, COUNT(message.message_id) - COUNT(read_message.message_id) AS new_messages, resume_id FROM job
+    JOIN resume USING (job_id)
+    JOIN applicant USING (applicant_id)
+    JOIN account USING (account_id)
+    LEFT JOIN message  USING (resume_id)
+    LEFT JOIN read_message  ON (read_message.account_id = account.account_id AND message.message_id = read_message.message_id)
+WHERE account.account_id = 7 AND (message.account_id != 7 OR message.account_id IS NULL)
+GROUP BY resume_id) AS messages USING (resume_id)
+JOIN job USING (job_id)
+JOIN applicant USING (applicant_id)
+JOIN account USING (account_id);
+
+
+
+-- прочитать сообщение #4
+INSERT INTO read_message (message_id, account_id)
+VALUES (4,7);
+
+
+
+-- прочитать сообщение #5
+INSERT INTO read_message (message_id, account_id)
+VALUES (5,7);
