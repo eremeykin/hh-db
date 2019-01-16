@@ -121,12 +121,12 @@ VALUES (7, 6, 4, 'Здравствуйте, меня устроит любое �
 
 
 -- Посмотреть диалог по вакансии 6
-SELECT job.title, hr.first_name || ' ' ||  hr.family_name AS name, text  FROM message
+SELECT send, hr.first_name || ' ' ||  hr.family_name AS name, text  FROM message
 JOIN account hr USING (account_id)
 JOIN vacancy USING (vacancy_id)
 JOIN resume USING (resume_id)
-JOIN job on resume.job_id = job.job_id
-WHERE vacancy_id = 6;
+WHERE vacancy_id = 6 AND resume_id =4
+ORDER BY send ASC;
 
 
 
