@@ -174,6 +174,20 @@ JOIN account USING (account_id);
 
 
 
+-- Второй вариант для
+-- (а) список моих резюме с количеством всех сообщений и количеством новых сообщений
+SELECT DISTINCT COUNT(message.message_id) OVER (PARTITION BY resume_id) AS total_messages, COUNT(message.message_id) OVER (PARTITION BY resume_id) - COUNT(read_message.message_id)  OVER (PARTITION BY resume_id) AS read_messages,
+ active, resume_id, first_name, family_name, contact_phone, contact_email, title, city, description, salary
+ FROM job
+    JOIN resume USING (job_id)
+    JOIN applicant USING (applicant_id)
+    JOIN account USING (account_id)
+    LEFT JOIN message  USING (resume_id)
+    LEFT JOIN read_message  ON (read_message.account_id = account.account_id AND message.message_id = read_message.message_id)
+WHERE account.account_id = 7 AND (message.account_id != 7 OR message.account_id IS NULL);
+
+
+
 -- прочитать сообщение #4
 INSERT INTO read_message (message_id, account_id)
 VALUES (4,7);
