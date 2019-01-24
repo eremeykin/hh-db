@@ -71,20 +71,20 @@ VALUES ('example.com'),('test.com'),('yandex.ru'),('gmail.com'),('mail.ru');
 
 INSERT INTO tmp_account (first_name, family_name, login, password, contact_email, contact_phone)
 -- female (~ 1 m 17s)
-SELECT tmp_female_first_name.val as first_name,
-       tmp_female_family_name.val as family_name,
-       CONCAT(tmp_login.val, generate_series, '@', tmp_domain.val) as login,
-       tmp_password.val as password,
-       CONCAT(generate_series, tmp_login.val, '@', tmp_domain.val) as contact_email,
-       floor(random() * (1000000000) + 1000000000)::int as contact_phone
+SELECT tmp_female_first_name.val AS first_name,
+       tmp_female_family_name.val AS family_name,
+       CONCAT(tmp_login.val, generate_series, '@', tmp_domain.val) AS login,
+       tmp_password.val AS password,
+       CONCAT(generate_series, tmp_login.val, '@', tmp_domain.val) AS contact_email,
+       floor(random() * (1000000000) + 1000000000)::INT AS contact_phone
        FROM
 (
   SELECT generate_series,
-         floor(random() * (SELECT COUNT(*) FROM tmp_login) + 1)::int as login,
-         floor(random() * (SELECT COUNT(*) FROM tmp_female_first_name) + 1)::int as first_name,
-         floor(random() * (SELECT COUNT(*) FROM tmp_female_family_name) + 1)::int as family_name,
-         floor(random() * (SELECT COUNT(*) FROM tmp_password) + 1)::int as password,
-         floor(random() * (SELECT COUNT(*) FROM tmp_domain) + 1)::int as login_domain
+         floor(random() * (SELECT COUNT(*) FROM tmp_login) + 1)::INT AS login,
+         floor(random() * (SELECT COUNT(*) FROM tmp_female_first_name) + 1)::INT AS first_name,
+         floor(random() * (SELECT COUNT(*) FROM tmp_female_family_name) + 1)::INT AS family_name,
+         floor(random() * (SELECT COUNT(*) FROM tmp_password) + 1)::INT AS password,
+         floor(random() * (SELECT COUNT(*) FROM tmp_domain) + 1)::INT AS login_domain
   FROM generate_series(1,2000000) -- 2 M females
 ) AS IDS
 JOIN tmp_female_first_name ON (first_name=tmp_female_first_name.id)
@@ -95,20 +95,20 @@ JOIN tmp_domain ON (login_domain=tmp_domain.id);
 
 INSERT INTO tmp_account (first_name, family_name, login, password, contact_email, contact_phone)
 -- male (~4 m 23 s)
-SELECT tmp_male_first_name.val as first_name,
-       tmp_male_family_name.val as family_name,
-       CONCAT(tmp_login.val, generate_series, '@', tmp_domain.val) as login,
-       tmp_password.val as password,
-       CONCAT(generate_series, tmp_login.val, '@', tmp_domain.val) as contact_email,
-       floor(random() * (1000000000) + 1000000000)::int as contact_phone
+SELECT tmp_male_first_name.val AS first_name,
+       tmp_male_family_name.val AS family_name,
+       CONCAT(tmp_login.val, generate_series, '@', tmp_domain.val) AS login,
+       tmp_password.val AS password,
+       CONCAT(generate_series, tmp_login.val, '@', tmp_domain.val) AS contact_email,
+       floor(random() * (1000000000) + 1000000000)::INT AS contact_phone
        FROM
 (
   SELECT generate_series,
-         floor(random() * (SELECT COUNT(*) FROM tmp_login) + 1)::int as login,
-         floor(random() * (SELECT COUNT(*) FROM tmp_male_first_name) + 1)::int as first_name,
-         floor(random() * (SELECT COUNT(*) FROM tmp_male_family_name) + 1)::int as family_name,
-         floor(random() * (SELECT COUNT(*) FROM tmp_password) + 1)::int as password,
-         floor(random() * (SELECT COUNT(*) FROM tmp_domain) + 1)::int as login_domain
+         floor(random() * (SELECT COUNT(*) FROM tmp_login) + 1)::INT as login,
+         floor(random() * (SELECT COUNT(*) FROM tmp_male_first_name) + 1)::INT AS first_name,
+         floor(random() * (SELECT COUNT(*) FROM tmp_male_family_name) + 1)::INT AS family_name,
+         floor(random() * (SELECT COUNT(*) FROM tmp_password) + 1)::INT AS password,
+         floor(random() * (SELECT COUNT(*) FROM tmp_domain) + 1)::INT AS login_domain
   FROM generate_series(2000000,5000000) -- 3 M males
 ) AS IDS
 JOIN tmp_male_first_name ON (first_name=tmp_male_first_name.id)
@@ -120,10 +120,10 @@ JOIN tmp_domain ON (login_domain=tmp_domain.id);
 
 --  (~1 m 33 s)
 INSERT INTO tmp_job (title, city, description, salary)
-SELECT SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::int) as title,
-       SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::int) as city,
-       SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::int) as description,
-       INT8RANGE(floor(random() * 30000 + 20000)::int, floor(random() * 120000 + 80000)::int)
+SELECT SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::INT) AS title,
+       SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::INT) AS city,
+       SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::INT) AS description,
+       INT8RANGE(floor(random() * 30000 + 20000)::INT, floor(random() * 120000 + 80000)::INT)
 FROM generate_series(1,4000000);
 
 
