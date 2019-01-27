@@ -78,6 +78,7 @@ CREATE TABLE tmp_read_message
 (
   read_message_id SERIAL,
   message_id INTEGER,
-  account_id INTEGER
+  account_id INTEGER,
+  UNIQUE (message_id, account_id)
 );
 
