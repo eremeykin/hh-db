@@ -1,3 +1,8 @@
+-- simulate account conflict
+INSERT INTO account (login, password, first_name, family_name, contact_email, contact_phone)
+SELECT login, password, first_name, family_name, contact_email, contact_phone FROM tmp_account
+ORDER BY account_id ASC OFFSET 300 LIMIT 1400;
+
 -- account
 WITH id_insert AS (
   INSERT INTO map_account (old_id)
@@ -8,7 +13,8 @@ WITH id_insert AS (
 INSERT INTO account (account_id, login, password, first_name, family_name, contact_email, contact_phone)
 SELECT id_insert.new_id, login, password, first_name, family_name, contact_email, contact_phone
   FROM tmp_account
-  JOIN id_insert ON (tmp_account.account_id = id_insert.old_id);
+  JOIN id_insert ON (tmp_account.account_id = id_insert.old_id)
+  ON CONFLICT ON CONSTRAINT account_login_key DO NOTHING;
 
 -- job
 WITH id_insert AS (
@@ -46,7 +52,8 @@ SELECT id_insert.new_id, map_account.new_id, map_company.new_id
   FROM tmp_hr_manager
   JOIN id_insert ON (tmp_hr_manager.hr_manager_id = id_insert.old_id)
   JOIN map_account ON (map_account.old_id = tmp_hr_manager.account_id)
-  JOIN map_company ON (map_company.old_id = tmp_hr_manager.company_id);
+  JOIN map_company ON (map_company.old_id = tmp_hr_manager.company_id)
+  JOIN account ON (map_account.new_id = account.account_id)
 
 -- applicant
 WITH id_insert AS (
@@ -59,7 +66,8 @@ INSERT INTO applicant (applicant_id, account_id)
 SELECT id_insert.new_id, map_account.new_id
   FROM tmp_applicant
   JOIN id_insert ON (tmp_applicant.applicant_id = id_insert.old_id)
-  JOIN map_account ON (map_account.old_id = tmp_applicant.account_id);
+  JOIN map_account ON (map_account.old_id = tmp_applicant.account_id)
+  JOIN account ON (map_account.new_id = account.account_id);
 
 -- vacancy
 WITH id_insert AS (
@@ -87,7 +95,8 @@ SELECT id_insert.new_id, active, map_applicant.new_id, map_job.new_id
   FROM tmp_resume
   JOIN id_insert ON (tmp_resume.resume_id = id_insert.old_id)
   JOIN map_applicant ON (map_applicant.old_id = tmp_resume.applicant_id)
-  JOIN map_job ON (map_job.old_id = tmp_resume.job_id);
+  JOIN map_job ON (map_job.old_id = tmp_resume.job_id)
+  JOIN applicant ON (map_applicant.new_id = applicant.applicant_id);
 
 -- message
 WITH id_insert AS (
@@ -102,7 +111,10 @@ SELECT id_insert.new_id, send, map_account.new_id, map_vacancy.new_id, map_resum
   JOIN id_insert ON (tmp_message.message_id = id_insert.old_id)
   JOIN map_account ON (map_account.old_id = tmp_message.account_id)
   JOIN map_vacancy ON (map_vacancy.old_id = tmp_message.vacancy_id)
-  JOIN map_resume ON (map_resume.old_id = tmp_message.resume_id);
+  JOIN map_resume ON (map_resume.old_id = tmp_message.resume_id)
+  JOIN account ON (map_account.new_id = account.account_id)
+  JOIN vacancy ON (map_vacancy.new_id = vacancy.vacancy_id)
+  JOIN resume ON (map_resume.new_id = resume.resume_id);
 
 -- read_message
 WITH id_insert AS (
@@ -116,5 +128,7 @@ SELECT id_insert.new_id, map_message.new_id, map_account.new_id
   FROM tmp_read_message
   JOIN id_insert ON (tmp_read_message.read_message_id = id_insert.old_id)
   JOIN map_message ON (map_message.old_id = tmp_read_message.message_id)
-  JOIN map_account ON (map_account.old_id = tmp_read_message.account_id);
+  JOIN map_account ON (map_account.old_id = tmp_read_message.account_id)
+  JOIN account ON (map_account.new_id = account.account_id)
+  JOIN message ON (map_message.new_id = message.message_id);
 --
