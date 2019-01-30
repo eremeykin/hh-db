@@ -52,7 +52,7 @@ CREATE TABLE account
 (
     account_id SERIAL PRIMARY KEY,
     login VARCHAR(500) UNIQUE NOT NULL,
-    password VARCHAR(500) NOT NULL,
+    password VARCHAR(500),
     first_name VARCHAR(500) NOT NULL,
     family_name VARCHAR(500) NOT NULL,
     contact_email VARCHAR(500),
