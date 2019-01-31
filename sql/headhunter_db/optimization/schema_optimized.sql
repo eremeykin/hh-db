@@ -129,7 +129,6 @@ COMMENT ON TABLE  read_message
 
 CREATE INDEX message_resume_id_index ON message (resume_id);
 CREATE INDEX message_vacancy_id_index ON message (vacancy_id);
-CREATE INDEX message_account_id_index ON message (account_id);
 
 CREATE INDEX resume_applicant_id_index ON resume (applicant_id);
 CREATE INDEX resume_job_id_index ON resume (job_id);
