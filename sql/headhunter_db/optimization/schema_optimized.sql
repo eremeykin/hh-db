@@ -129,6 +129,7 @@ COMMENT ON TABLE  read_message
 
 CREATE INDEX message_resume_id_index ON message (resume_id);
 CREATE INDEX message_vacancy_id_index ON message (vacancy_id);
+-- CREATE INDEX message_account_id_index ON message (account_id);
 
 CREATE INDEX resume_applicant_id_index ON resume (applicant_id);
 CREATE INDEX resume_job_id_index ON resume (job_id);
@@ -138,5 +139,5 @@ CREATE INDEX vacancy_job_id_index ON vacancy (job_id);
 
 CREATE INDEX hr_manager_company_index ON hr_manager (company_id);
 
-CREATE INDEX job_city_index  ON job USING gin(to_tsvector('russian', city));
-CREATE INDEX job_title_index  ON job USING gin(to_tsvector('russian', title));
+CREATE INDEX job_city_index  ON job USING GIN(to_tsvector('russian', city));
+CREATE INDEX job_title_index  ON job USING GIN(to_tsvector('russian', title));
