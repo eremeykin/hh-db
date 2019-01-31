@@ -85,7 +85,7 @@ SELECT id_insert.new_id, active, map_company.new_id, map_job.new_id
   FROM tmp_vacancy
   JOIN id_insert ON (tmp_vacancy.vacancy_id = id_insert.old_id)
   JOIN map_company ON (map_company.old_id = tmp_vacancy.company_id)
-  JOIN map_job ON (map_job.old_id = tmp_vacancy.company_id);
+  JOIN map_job ON (map_job.old_id = tmp_vacancy.job_id)
 
 -- resume
 WITH id_insert AS (
