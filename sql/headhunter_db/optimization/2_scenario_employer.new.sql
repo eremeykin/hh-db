@@ -199,22 +199,28 @@ EXPLAIN ANALYSE SELECT first_name, family_name, contact_email, contact_phone, ti
 JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
-WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,410000]' AND active;
--- Nested Loop  (cost=0.86..1244.22 rows=1 width=127) (actual time=15.029..15.041 rows=2 loops=1)
---   ->  Nested Loop  (cost=0.57..1243.83 rows=1 width=74) (actual time=15.022..15.031 rows=2 loops=1)
---         ->  Nested Loop  (cost=0.29..1243.44 rows=1 width=74) (actual time=15.016..15.022 rows=2 loops=1)
---               ->  Seq Scan on job  (cost=0.00..1235.14 rows=1 width=74) (actual time=14.996..14.999 rows=2 loops=1)
---                     Filter: (((title)::text ~~ 'Инженер'::text) AND (salary && '(,410001)'::int8range) AND ((city)::text = 'Москва'::text))
---                     Rows Removed by Filter: 40010
---               ->  Index Scan using resume_job_id_index on resume  (cost=0.29..8.30 rows=1 width=8) (actual time=0.008..0.008 rows=1 loops=2)
+WHERE to_tsvector('russian', city) @@ to_tsquery('russian','Иркутск')
+AND to_tsvector('russian', title) @@ to_tsquery('russian','Биолог')
+AND salary && '[,410000]' AND active;
+--  Nested Loop  (cost=16.87..29.61 rows=1 width=128) (actual time=0.107..0.111 rows=1 loops=1)
+--   ->  Nested Loop  (cost=16.58..29.21 rows=1 width=75) (actual time=0.096..0.099 rows=1 loops=1)
+--         ->  Nested Loop  (cost=16.30..28.83 rows=1 width=75) (actual time=0.084..0.087 rows=1 loops=1)
+--               ->  Bitmap Heap Scan on job  (cost=16.01..20.53 rows=1 width=75) (actual time=0.065..0.067 rows=1 loops=1)
+--                     Recheck Cond: (to_tsvector('russian'::regconfig, (title)::text) @@ '''биолог'''::tsquery)
+--                     Filter: ((salary && '(,410001)'::int8range) AND (to_tsvector('russian'::regconfig, (city)::text) @@ '''иркутск'''::tsquery))
+--                     Heap Blocks: exact=1
+--                     ->  Bitmap Index Scan on job_title_index  (cost=0.00..16.01 rows=1 width=0) (actual time=0.026..0.026 rows=1 loops=1)
+--                           Index Cond: (to_tsvector('russian'::regconfig, (title)::text) @@ '''биолог'''::tsquery)
+--               ->  Index Scan using resume_job_id_key on resume  (cost=0.29..8.30 rows=1 width=8) (actual time=0.015..0.015 rows=1 loops=1)
 --                     Index Cond: (job_id = job.job_id)
 --                     Filter: active
---         ->  Index Scan using applicant_pkey on applicant  (cost=0.29..0.38 rows=1 width=8) (actual time=0.003..0.003 rows=1 loops=2)
+--         ->  Index Scan using applicant_pkey on applicant  (cost=0.29..0.38 rows=1 width=8) (actual time=0.009..0.009 rows=1 loops=1)
 --               Index Cond: (applicant_id = resume.applicant_id)
---   ->  Index Scan using account_pkey on account  (cost=0.29..0.39 rows=1 width=61) (actual time=0.003..0.003 rows=1 loops=2)
+--   ->  Index Scan using account_pkey on account  (cost=0.29..0.39 rows=1 width=61) (actual time=0.009..0.009 rows=1 loops=1)
 --         Index Cond: (account_id = applicant.account_id)
--- Planning time: 2.571 ms
--- Execution time: 15.133 ms
+-- Planning time: 1.894 ms
+-- Execution time: 0.254 ms
+-- Execution time: 0.254 ms
 
 -- Написать сообщение соискателю
 EXPLAIN ANALYSE INSERT INTO message (account_id, vacancy_id, resume_id, text, send)

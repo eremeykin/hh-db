@@ -137,3 +137,6 @@ CREATE INDEX vacancy_company_id_index ON vacancy (company_id);
 CREATE INDEX vacancy_job_id_index ON vacancy (job_id);
 
 CREATE INDEX hr_manager_company_index ON hr_manager (company_id);
+
+CREATE INDEX job_city_index  ON job USING gin(to_tsvector('russian', city));
+CREATE INDEX job_title_index  ON job USING gin(to_tsvector('russian', title));

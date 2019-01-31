@@ -243,19 +243,24 @@ ORDER BY vacancy_id ASC OFFSET 20 LIMIT 10;
 EXPLAIN ANALYSE SELECT name, title, city, description, salary FROM vacancy
 JOIN company USING (company_id)
 JOIN job USING (job_id)
-WHERE city='Москва' AND title LIKE '%Инженер%' AND salary && '[600000,]' AND active;
--- Nested Loop  (cost=0.56..1243.75 rows=1 width=91) (actual time=0.112..22.484 rows=1 loops=1)
---   ->  Nested Loop  (cost=0.29..1243.45 rows=1 width=74) (actual time=0.092..22.464 rows=1 loops=1)
---         ->  Seq Scan on job  (cost=0.00..1235.14 rows=1 width=74) (actual time=0.058..22.428 rows=1 loops=1)
---               Filter: (((title)::text ~~ '%Инженер%'::text) AND (salary && '[600000,)'::int8range) AND ((city)::text = 'Москва'::text))
---               Rows Removed by Filter: 40009
---         ->  Index Scan using vacancy_job_id_index on vacancy  (cost=0.29..8.30 rows=1 width=8) (actual time=0.027..0.027 rows=1 loops=1)
+WHERE to_tsvector('russian', city) @@ to_tsquery('russian','Москва')
+AND to_tsvector('russian', title) @@ to_tsquery('russian','Инженер')
+AND salary && '[600000,]' AND active;
+-- Nested Loop  (cost=16.57..29.14 rows=1 width=92) (actual time=0.096..0.098 rows=1 loops=1)
+--   ->  Nested Loop  (cost=16.30..28.83 rows=1 width=75) (actual time=0.089..0.091 rows=1 loops=1)
+--         ->  Bitmap Heap Scan on job  (cost=16.01..20.53 rows=1 width=75) (actual time=0.077..0.079 rows=1 loops=1)
+--               Recheck Cond: (to_tsvector('russian'::regconfig, (title)::text) @@ '''инженер'''::tsquery)
+--               Filter: ((salary && '[600000,)'::int8range) AND (to_tsvector('russian'::regconfig, (city)::text) @@ '''москв'''::tsquery))
+--               Heap Blocks: exact=1
+--               ->  Bitmap Index Scan on job_title_index  (cost=0.00..16.01 rows=1 width=0) (actual time=0.022..0.022 rows=1 loops=1)
+--                     Index Cond: (to_tsvector('russian'::regconfig, (title)::text) @@ '''инженер'''::tsquery)
+--         ->  Index Scan using vacancy_job_id_key on vacancy  (cost=0.29..8.30 rows=1 width=8) (actual time=0.009..0.009 rows=1 loops=1)
 --               Index Cond: (job_id = job.job_id)
 --               Filter: active
---   ->  Index Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=25) (actual time=0.015..0.015 rows=1 loops=1)
+--   ->  Index Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=25) (actual time=0.005..0.005 rows=1 loops=1)
 --         Index Cond: (company_id = vacancy.company_id)
--- Planning time: 1.869 ms
--- Execution time: 22.611 ms
+-- Planning time: 0.995 ms
+-- Execution time: 0.202 ms
 
 -- Написать сообщение
 EXPLAIN ANALYSE INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
