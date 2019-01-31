@@ -224,22 +224,20 @@ RETURNING job_id;
 EXPLAIN ANALYSE SELECT name, title, city, description,salary FROM vacancy
 JOIN company USING (company_id)
 JOIN job USING (job_id)
-WHERE active;
--- Hash Join  (cost=218.65..1270.24 rows=4353 width=91) (actual time=8.187..31.228 rows=4353 loops=1)
---   Hash Cond: (vacancy.company_id = company.company_id)
---   ->  Hash Join  (cost=190.27..1230.38 rows=4353 width=74) (actual time=6.596..27.103 rows=4353 loops=1)
---         Hash Cond: (job.job_id = vacancy.job_id)
---         ->  Seq Scan on job  (cost=0.00..935.08 rows=40008 width=74) (actual time=0.015..8.466 rows=40010 loops=1)
---         ->  Hash  (cost=135.86..135.86 rows=4353 width=8) (actual time=6.552..6.552 rows=4353 loops=1)
---               Buckets: 8192  Batches: 1  Memory Usage: 235kB
---               ->  Seq Scan on vacancy  (cost=0.00..135.86 rows=4353 width=8) (actual time=0.026..4.263 rows=4353 loops=1)
+WHERE active
+ORDER BY vacancy_id ASC OFFSET 20 LIMIT 10;
+-- Limit  (cost=26.46..39.26 rows=10 width=95) (actual time=0.748..1.067 rows=10 loops=1)
+--   ->  Nested Loop  (cost=0.85..5574.23 rows=4353 width=95) (actual time=0.076..1.049 rows=30 loops=1)
+--         ->  Nested Loop  (cost=0.56..1647.68 rows=4353 width=29) (actual time=0.057..0.584 rows=30 loops=1)
+--               ->  Index Scan using vacancy_pkey on vacancy  (cost=0.29..326.57 rows=4353 width=12) (actual time=0.032..0.213 rows=30 loops=1)
 --                     Filter: active
---                     Rows Removed by Filter: 4433
---   ->  Hash  (cost=16.50..16.50 rows=950 width=25) (actual time=1.572..1.572 rows=950 loops=1)
---         Buckets: 1024  Batches: 1  Memory Usage: 63kB
---         ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=25) (actual time=0.033..0.733 rows=950 loops=1)
--- Planning time: 2.271 ms
--- Execution time: 31.694 ms
+--                     Rows Removed by Filter: 34
+--               ->  Index Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=25) (actual time=0.009..0.009 rows=1 loops=30)
+--                     Index Cond: (company_id = vacancy.company_id)
+--         ->  Index Scan using job_pkey on job  (cost=0.29..0.90 rows=1 width=74) (actual time=0.013..0.013 rows=1 loops=30)
+--               Index Cond: (job_id = vacancy.job_id)
+-- Planning time: 1.807 ms
+-- Execution time: 1.208 ms
 
 -- Поиск активных вакансий по городу и названию и чтоб платили много
 EXPLAIN ANALYSE SELECT name, title, city, description, salary FROM vacancy
