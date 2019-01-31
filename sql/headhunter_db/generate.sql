@@ -147,26 +147,28 @@ INSERT INTO tmp_resume (active, applicant_id, job_id)
 SELECT random()>0.5 as active,
        floor(random() * 20000 + 1)::INT as applicant_id,
        floor(random() * 40000 + 1)::INT as job_id
-FROM generate_series(1, 20000);
+FROM generate_series(1, 20000)
+ON CONFLICT DO NOTHING;
 
 INSERT INTO tmp_vacancy (active, company_id, job_id)
 SELECT random()>0.5 as active,
        floor(random() * 947 + 1)::INT as company_id,
        floor(random() * 40000 + 1)::INT as job_id
-FROM generate_series(1, 10000);
+FROM generate_series(1, 10000)
+ON CONFLICT DO NOTHING;
 
 INSERT INTO tmp_message (send, account_id, vacancy_id, resume_id, text)
 SELECT timestamp '2017-01-10 20:00:00' +
        random() * (timestamp '2017-01-20 20:00:00' -
                    timestamp '2019-01-10 10:00:00') as send,
        floor(random() * 25000 + 1)::INT as account_id,
-       floor(random() * 10000 + 1)::INT as vacancy_id,
-       floor(random() * 20000 + 1)::INT as resume_id,
+       (SELECT vacancy_id FROM tmp_vacancy ORDER BY RANDOM() LIMIT 1) as vacancy_id,
+       (SELECT resume_id FROM tmp_resume ORDER BY RANDOM() LIMIT 1) as resume_id,
        SUBSTRING(MD5(random()::text), 0, floor(random() * 25 + 5)::INT) AS text
 FROM generate_series(1, 100000);
 
 INSERT INTO tmp_read_message (message_id, account_id)
-SELECT floor(random() * 100000 + 1)::INT as message_id,
+SELECT floor(random() * (SELECT COUNT(*) FROM tmp_message)  + 1)::INT as message_id,
        floor(random() * 25000 + 1)::INT as account_id
 FROM generate_series(1, 50000)
 ON CONFLICT DO NOTHING;

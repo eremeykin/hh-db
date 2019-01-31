@@ -29,7 +29,7 @@ CREATE TABLE tmp_vacancy
     vacancy_id SERIAL,
     active BOOLEAN,
     company_id INTEGER,
-    job_id INTEGER
+    job_id INTEGER UNIQUE
 );
 
 CREATE TABLE tmp_account
@@ -54,7 +54,7 @@ CREATE TABLE tmp_resume
     resume_id SERIAL,
     active BOOLEAN,
     applicant_id INTEGER,
-    job_id INTEGER
+    job_id INTEGER UNIQUE
 );
 
 CREATE TABLE tmp_hr_manager
