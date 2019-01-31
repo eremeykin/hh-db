@@ -1,19 +1,19 @@
 -- Зарегистрироваться
 EXPLAIN ANALYSE WITH insert_account AS (
         INSERT INTO account (login, password, first_name, family_name, contact_email, contact_phone)
-        VALUES ('elon@musk.com', 'hash(password+salt) to be here', 'Elon', 'Musk', null, null)
+        VALUES ('elon3@musk.com', 'hash(password+salt) to be here', 'Elon', 'Musk', null, null)
         RETURNING account_id
    )
 INSERT INTO applicant (account_id)
 SELECT account_id FROM insert_account;
---  Insert on applicant  (cost=0.01..0.04 rows=1 width=8) (actual time=10867.440..10867.440 rows=0 loops=1)
+-- Insert on applicant  (cost=0.01..0.04 rows=1 width=8) (actual time=0.116..0.117 rows=0 loops=1)
 --   CTE insert_account
---     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=10022.850..10022.854 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=7216.200..7216.201 rows=1 loops=1)
---   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=8) (actual time=10420.573..10420.580 rows=1 loops=1)
--- Planning time: 0.084 ms
--- Trigger for constraint applicant_account_id_fkey on applicant: time=1.071 calls=1
--- Execution time: 10868.654 ms
+--     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.083..0.084 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.013..0.013 rows=1 loops=1)
+--   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=8) (actual time=0.092..0.093 rows=1 loops=1)
+-- Planning time: 0.099 ms
+-- Trigger for constraint applicant_account_id_fkey on applicant: time=0.156 calls=1
+-- Execution time: 0.332 ms
 
 -- Залогиниться
 EXPLAIN ANALYSE SELECT password, account_id, applicant_id, hr_manager_id FROM account
