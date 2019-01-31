@@ -6,33 +6,31 @@ EXPLAIN ANALYSE WITH insert_account AS (
    )
 INSERT INTO hr_manager (account_id)
 SELECT account_id FROM insert_account;
--- Insert on hr_manager  (cost=0.01..0.04 rows=1 width=12) (actual time=0.172..0.172 rows=0 loops=1)
+-- Insert on hr_manager  (cost=0.01..0.04 rows=1 width=12) (actual time=82.391..82.392 rows=0 loops=1)
 --   CTE insert_account
---     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.064..0.065 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.021..0.022 rows=1 loops=1)
---   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=12) (actual time=0.078..0.080 rows=1 loops=1)
--- Planning time: 0.102 ms
--- Trigger for constraint hr_manager_account_id_fkey on hr_manager: time=0.819 calls=1
--- Trigger for constraint hr_manager_company_id_fkey on hr_manager: time=0.036 calls=1
--- Execution time: 1.129 ms
-
+--     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.132..0.135 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.019..0.020 rows=1 loops=1)
+--   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=12) (actual time=34.003..34.010 rows=1 loops=1)
+-- Planning time: 0.100 ms
+-- Trigger for constraint hr_manager_account_id_fkey on hr_manager: time=0.618 calls=1
+-- Trigger for constraint hr_manager_company_id_fkey on hr_manager: time=0.052 calls=1
+-- Execution time: 83.140 ms
 
 -- Залогиниться
 EXPLAIN ANALYSE SELECT password, account_id, applicant_id, hr_manager_id FROM account
 LEFT JOIN applicant USING (account_id)
 LEFT JOIN hr_manager USING (account_id)
 WHERE login = 'kukushkin@hepi.ru';
--- Nested Loop Left Join  (cost=0.86..24.91 rows=1 width=19) (actual time=0.070..0.074 rows=1 loops=1)
---   ->  Nested Loop Left Join  (cost=0.57..16.61 rows=1 width=15) (actual time=0.055..0.059 rows=1 loops=1)
---         ->  Index Scan using account_login_key on account  (cost=0.29..8.30 rows=1 width=11) (actual time=0.036..0.039 rows=1 loops=1)
+-- Nested Loop Left Join  (cost=1.28..25.33 rows=1 width=19) (actual time=0.029..0.030 rows=1 loops=1)
+--   ->  Nested Loop Left Join  (cost=0.86..16.89 rows=1 width=15) (actual time=0.024..0.025 rows=1 loops=1)
+--         ->  Index Scan using account_login_key on account  (cost=0.43..8.45 rows=1 width=11) (actual time=0.016..0.016 rows=1 loops=1)
 --               Index Cond: ((login)::text = 'kukushkin@hepi.ru'::text)
---         ->  Index Scan using applicant_account_id_key on applicant  (cost=0.29..8.30 rows=1 width=8) (actual time=0.012..0.012 rows=0 loops=1)
+--         ->  Index Scan using applicant_account_id_key on applicant  (cost=0.43..8.45 rows=1 width=8) (actual time=0.006..0.006 rows=0 loops=1)
 --               Index Cond: (account.account_id = account_id)
---   ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..8.30 rows=1 width=8) (actual time=0.011..0.011 rows=1 loops=1)
+--   ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..8.44 rows=1 width=8) (actual time=0.004..0.004 rows=1 loops=1)
 --         Index Cond: (account.account_id = account_id)
--- Planning time: 1.323 ms
--- Execution time: 0.188 ms
-
+-- Planning time: 0.332 ms
+-- Execution time: 0.064 ms
 
 -- Создать компанию
 EXPLAIN ANALYSE WITH insert_company AS (
@@ -43,34 +41,32 @@ EXPLAIN ANALYSE WITH insert_company AS (
 UPDATE hr_manager SET
         company_id = (SELECT company_id from insert_company)
 WHERE account_id = 8;
--- Update on hr_manager  (cost=0.32..8.34 rows=1 width=18) (actual time=0.023..0.023 rows=0 loops=1)
+-- Update on hr_manager  (cost=0.46..8.47 rows=1 width=18) (actual time=0.022..0.022 rows=0 loops=1)
 --   CTE insert_company
---     ->  Insert on company  (cost=0.00..0.01 rows=1 width=520) (actual time=0.138..0.139 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=520) (actual time=0.031..0.032 rows=1 loops=1)
+--     ->  Insert on company  (cost=0.00..0.01 rows=1 width=520) (actual time=55.878..55.880 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=520) (actual time=38.302..38.303 rows=1 loops=1)
 --   InitPlan 2 (returns $2)
 --     ->  CTE Scan on insert_company  (cost=0.00..0.02 rows=1 width=4) (never executed)
---   ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..8.30 rows=1 width=18) (actual time=0.020..0.021 rows=0 loops=1)
+--   ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..8.44 rows=1 width=18) (actual time=0.021..0.021 rows=0 loops=1)
 --         Index Cond: (account_id = 8)
--- Planning time: 0.289 ms
--- Execution time: 0.289 ms
-
+-- Planning time: 0.223 ms
+-- Execution time: 55.972 ms
 
 --Посмотреть компании
 EXPLAIN ANALYSE SELECT name, first_name, family_name, contact_email, contact_phone FROM company
 JOIN hr_manager USING (company_id)
 JOIN account USING (account_id);
--- Hash Join  (cost=28.99..804.48 rows=5000 width=78) (actual time=1.210..28.487 rows=5000 loops=1)
+-- Hash Join  (cost=32929.40..79796.44 rows=499461 width=80) (actual time=0.622..7565.639 rows=499461 loops=1)
 --   Hash Cond: (hr_manager.company_id = company.company_id)
---   ->  Merge Join  (cost=0.61..762.93 rows=5000 width=61) (actual time=0.046..23.352 rows=5001 loops=1)
+--   ->  Merge Join  (cost=32901.02..78451.12 rows=499461 width=63) (actual time=0.035..7406.508 rows=499462 loops=1)
 --         Merge Cond: (hr_manager.account_id = account.account_id)
---         ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..170.28 rows=5000 width=8) (actual time=0.019..2.745 rows=5001 loops=1)
---         ->  Index Scan using account_pkey on account  (cost=0.29..1041.39 rows=25007 width=61) (actual time=0.016..10.787 rows=25009 loops=1)
---   ->  Hash  (cost=16.50..16.50 rows=950 width=25) (actual time=1.148..1.148 rows=951 loops=1)
+--         ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..15683.34 rows=499461 width=8) (actual time=0.016..127.707 rows=499462 loops=1)
+--         ->  Index Scan using account_pkey on account  (cost=0.43..112721.07 rows=2500120 width=63) (actual time=0.013..6700.587 rows=2500009 loops=1)
+--   ->  Hash  (cost=16.50..16.50 rows=950 width=25) (actual time=0.577..0.577 rows=951 loops=1)
 --         Buckets: 1024  Batches: 1  Memory Usage: 63kB
---         ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=25) (actual time=0.022..0.490 rows=951 loops=1)
--- Planning time: 1.044 ms
--- Execution time: 29.212 ms
-
+--         ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=25) (actual time=0.011..0.257 rows=951 loops=1)
+-- Planning time: 0.618 ms
+-- Execution time: 7592.158 ms
 
 -- Зарегистрируем ещё одного hr менеджера, так как в компании их может быть несколько
 EXPLAIN ANALYSE WITH insert_account AS (
@@ -80,30 +76,31 @@ EXPLAIN ANALYSE WITH insert_account AS (
    )
 INSERT INTO hr_manager (account_id, company_id)
 SELECT account_id,4 FROM insert_account;
--- Insert on hr_manager  (cost=0.01..0.04 rows=1 width=12) (actual time=0.075..0.075 rows=0 loops=1)
+-- Insert on hr_manager  (cost=0.01..0.04 rows=1 width=12) (actual time=34.064..34.064 rows=0 loops=1)
 --   CTE insert_account
---     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.050..0.050 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.011..0.011 rows=1 loops=1)
---   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=12) (actual time=0.058..0.059 rows=1 loops=1)
--- Planning time: 0.090 ms
--- Trigger for constraint hr_manager_account_id_fkey on hr_manager: time=0.130 calls=1
--- Trigger for constraint hr_manager_company_id_fkey on hr_manager: time=0.172 calls=1
--- Execution time: 0.431 ms
-
+--     ->  Insert on account  (cost=0.00..0.01 rows=1 width=2592) (actual time=33.767..33.771 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=2592) (actual time=0.104..0.106 rows=1 loops=1)
+--   ->  CTE Scan on insert_account  (cost=0.00..0.03 rows=1 width=12) (actual time=33.875..33.881 rows=1 loops=1)
+-- Planning time: 0.071 ms
+-- Trigger for constraint hr_manager_account_id_fkey on hr_manager: time=0.500 calls=1
+-- Trigger for constraint hr_manager_company_id_fkey on hr_manager: time=0.606 calls=1
+-- Execution time: 35.240 ms
 
 -- Посмотреть менеджеров компании
 EXPLAIN ANALYSE SELECT login, first_name, family_name FROM hr_manager
 JOIN account USING (account_id)
 WHERE company_id = 4;
--- Nested Loop  (cost=0.29..132.03 rows=5 width=49) (actual time=0.256..2.690 rows=8 loops=1)
---   ->  Seq Scan on hr_manager  (cost=0.00..90.50 rows=5 width=4) (actual time=0.235..2.554 rows=8 loops=1)
---         Filter: (company_id = 4)
---         Rows Removed by Filter: 4994
---   ->  Index Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=53) (actual time=0.013..0.013 rows=1 loops=8)
---         Index Cond: (account_id = hr_manager.account_id)
--- Planning time: 0.556 ms
--- Execution time: 2.764 ms
-
+-- Gather  (cost=1000.43..9926.43 rows=512 width=51) (actual time=1.134..50.994 rows=546 loops=1)
+--   Workers Planned: 1
+--   Workers Launched: 1
+--   ->  Nested Loop  (cost=0.43..8875.23 rows=301 width=51) (actual time=0.385..27.093 rows=273 loops=2)
+--         ->  Parallel Seq Scan on hr_manager  (cost=0.00..6372.51 rows=301 width=4) (actual time=0.339..23.923 rows=273 loops=2)
+--               Filter: (company_id = 4)
+--               Rows Removed by Filter: 249458
+--         ->  Index Scan using account_pkey on account  (cost=0.43..8.31 rows=1 width=55) (actual time=0.011..0.011 rows=1 loops=546)
+--               Index Cond: (account_id = hr_manager.account_id)
+-- Planning time: 0.600 ms
+-- Execution time: 51.094 ms
 
 --  Создать вакансию
 EXPLAIN ANALYSE WITH insert_job AS (
@@ -115,16 +112,15 @@ EXPLAIN ANALYSE WITH insert_job AS (
 INSERT INTO vacancy (company_id, job_id, active)
 SELECT 4, job_id, TRUE
 FROM insert_job;
--- Insert on vacancy  (cost=0.01..0.04 rows=1 width=13) (actual time=0.144..0.144 rows=0 loops=1)
+-- Insert on vacancy  (cost=0.01..0.04 rows=1 width=13) (actual time=39.244..39.245 rows=0 loops=1)
 --   CTE insert_job
---     ->  Insert on job  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.067..0.069 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.029..0.030 rows=1 loops=1)
---   ->  CTE Scan on insert_job  (cost=0.00..0.03 rows=1 width=13) (actual time=0.080..0.082 rows=1 loops=1)
+--     ->  Insert on job  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.148..0.151 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.075..0.076 rows=1 loops=1)
+--   ->  CTE Scan on insert_job  (cost=0.00..0.03 rows=1 width=13) (actual time=39.023..39.028 rows=1 loops=1)
 -- Planning time: 0.118 ms
--- Trigger for constraint vacancy_company_id_fkey on vacancy: time=0.333 calls=1
--- Trigger for constraint vacancy_job_id_fkey on vacancy: time=0.212 calls=1
--- Execution time: 0.766 ms
-
+-- Trigger for constraint vacancy_company_id_fkey on vacancy: time=0.472 calls=1
+-- Trigger for constraint vacancy_job_id_fkey on vacancy: time=0.252 calls=1
+-- Execution time: 40.050 ms
 
 -- Посмотреть созданные вакансии
 EXPLAIN ANALYSE SELECT active, vacancy_id, name, title, city, description, salary FROM vacancy
@@ -133,47 +129,53 @@ JOIN hr_manager USING (company_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
 WHERE account_id = 8;
--- Nested Loop  (cost=9.16..206.98 rows=11 width=97) (actual time=0.150..0.150 rows=0 loops=1)
---   ->  Nested Loop  (cost=8.89..204.01 rows=10 width=84) (actual time=0.148..0.149 rows=0 loops=1)
---         ->  Nested Loop  (cost=8.60..198.14 rows=10 width=17) (actual time=0.148..0.148 rows=0 loops=1)
---               ->  Index Only Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=4) (actual time=0.028..0.030 rows=1 loops=1)
---                     Index Cond: (account_id = 8)
---                     Heap Fetches: 1
---               ->  Hash Join  (cost=8.31..189.74 rows=10 width=21) (actual time=0.113..0.113 rows=0 loops=1)
---                     Hash Cond: (vacancy.company_id = hr_manager.company_id)
---                     ->  Seq Scan on vacancy  (cost=0.00..155.05 rows=10005 width=13) (actual time=0.054..0.054 rows=1 loops=1)
---                     ->  Hash  (cost=8.30..8.30 rows=1 width=8) (actual time=0.037..0.037 rows=0 loops=1)
---                           Buckets: 1024  Batches: 1  Memory Usage: 8kB
---                           ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..8.30 rows=1 width=8) (actual time=0.036..0.036 rows=0 loops=1)
---                                 Index Cond: (account_id = 8)
---         ->  Index Scan using job_pkey on job  (cost=0.29..0.59 rows=1 width=75) (never executed)
---               Index Cond: (job_id = vacancy.job_id)
---   ->  Index Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=25) (never executed)
---         Index Cond: (company_id = vacancy.company_id)
--- Planning time: 5.706 ms
--- Execution time: 0.338 ms
-
+-- Nested Loop  (cost=11869.49..11939.14 rows=1053 width=96) (actual time=4.300..4.300 rows=0 loops=1)
+--   ->  Index Only Scan using account_pkey on account  (cost=0.43..4.45 rows=1 width=4) (actual time=0.038..0.041 rows=1 loops=1)
+--         Index Cond: (account_id = 8)
+--         Heap Fetches: 0
+--   ->  Merge Join  (cost=11869.06..11924.16 rows=1053 width=100) (actual time=4.257..4.257 rows=0 loops=1)
+--         Merge Cond: (job.job_id = vacancy.job_id)
+--         ->  Index Scan using job_pkey on job  (cost=0.43..171452.18 rows=3999842 width=74) (actual time=0.009..0.009 rows=1 loops=1)
+--         ->  Sort  (cost=11867.47..11870.10 rows=1053 width=34) (actual time=4.246..4.246 rows=0 loops=1)
+--               Sort Key: vacancy.job_id
+--               Sort Method: quicksort  Memory: 25kB
+--               ->  Gather  (cost=1036.83..11814.61 rows=1053 width=34) (actual time=4.240..5.636 rows=0 loops=1)
+--                     Workers Planned: 2
+--                     Workers Launched: 2
+--                     ->  Hash Join  (cost=36.83..10709.31 rows=439 width=34) (actual time=0.124..0.124 rows=0 loops=3)
+--                           Hash Cond: (vacancy.company_id = company.company_id)
+--                           ->  Hash Join  (cost=8.45..10679.78 rows=439 width=21) (actual time=0.123..0.123 rows=0 loops=3)
+--                                 Hash Cond: (vacancy.company_id = hr_manager.company_id)
+--                                 ->  Parallel Seq Scan on vacancy  (cost=0.00..9572.69 rows=416669 width=13) (actual time=0.018..0.018 rows=1 loops=3)
+--                                 ->  Hash  (cost=8.44..8.44 rows=1 width=8) (actual time=0.013..0.013 rows=0 loops=3)
+--                                       Buckets: 1024  Batches: 1  Memory Usage: 8kB
+--                                       ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..8.44 rows=1 width=8) (actual time=0.013..0.013 rows=0 loops=3)
+--                                             Index Cond: (account_id = 8)
+--                           ->  Hash  (cost=16.50..16.50 rows=950 width=25) (never executed)
+--                                 ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=25) (never executed)
+-- Planning time: 1.401 ms
+-- Execution time: 5.775 ms
 
 -- Деактивировать вакансию #6
 EXPLAIN ANALYSE UPDATE vacancy SET
     active = FALSE
 WHERE vacancy_id = 6;
--- Update on vacancy  (cost=0.29..8.30 rows=1 width=19) (actual time=0.141..0.141 rows=0 loops=1)
---   ->  Index Scan using vacancy_pkey on vacancy  (cost=0.29..8.30 rows=1 width=19) (actual time=0.041..0.044 rows=1 loops=1)
+-- Update on vacancy  (cost=0.42..8.44 rows=1 width=19) (actual time=0.155..0.156 rows=0 loops=1)
+--   ->  Index Scan using vacancy_pkey on vacancy  (cost=0.42..8.44 rows=1 width=19) (actual time=0.078..0.081 rows=1 loops=1)
 --         Index Cond: (vacancy_id = 6)
--- Planning time: 0.187 ms
--- Execution time: 0.227 ms
+-- Planning time: 0.113 ms
+-- Execution time: 0.207 ms
 
 
 -- Активировать обратно вакансию #6
 EXPLAIN ANALYSE UPDATE vacancy SET
     active = TRUE
 WHERE vacancy_id = 6;
--- Update on vacancy  (cost=0.29..8.30 rows=1 width=19) (actual time=0.144..0.144 rows=0 loops=1)
---   ->  Index Scan using vacancy_pkey on vacancy  (cost=0.29..8.30 rows=1 width=19) (actual time=0.040..0.092 rows=1 loops=1)
+-- Update on vacancy  (cost=0.42..8.44 rows=1 width=19) (actual time=0.120..0.120 rows=0 loops=1)
+--   ->  Index Scan using vacancy_pkey on vacancy  (cost=0.42..8.44 rows=1 width=19) (actual time=0.034..0.079 rows=1 loops=1)
 --         Index Cond: (vacancy_id = 6)
--- Planning time: 0.208 ms
--- Execution time: 0.230 ms
+-- Planning time: 0.135 ms
+-- Execution time: 0.188 ms
 
 -- Посмотреть все резюме
 EXPLAIN ANALYSE SELECT first_name, family_name, contact_email, contact_phone, title, city, description FROM resume
@@ -181,27 +183,26 @@ JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
 WHERE active;
--- Hash Join  (cost=2435.56..3285.51 rows=10068 width=107) (actual time=40.345..54.544 rows=10070 loops=1)
+-- Hash Join  (cost=309685.93..514040.47 rows=1003001 width=107) (actual time=2771.483..5274.569 rows=999588 loops=1)
 --   Hash Cond: (resume.job_id = job.job_id)
---   ->  Hash Join  (cost=1000.38..1823.90 rows=10068 width=61) (actual time=17.092..26.497 rows=10070 loops=1)
+--   ->  Hash Join  (cost=127211.49..268322.15 rows=1003001 width=63) (actual time=1222.199..2808.518 rows=999588 loops=1)
 --         Hash Cond: (account.account_id = applicant.account_id)
---         ->  Seq Scan on account  (cost=0.00..629.07 rows=25007 width=61) (actual time=0.007..2.773 rows=25010 loops=1)
---         ->  Hash  (cost=874.53..874.53 rows=10068 width=8) (actual time=17.019..17.019 rows=10070 loops=1)
---               Buckets: 16384  Batches: 1  Memory Usage: 522kB
---               ->  Hash Join  (cost=539.07..874.53 rows=10068 width=8) (actual time=4.591..13.789 rows=10070 loops=1)
+--         ->  Seq Scan on account  (cost=0.00..64073.20 rows=2500120 width=63) (actual time=0.006..386.053 rows=2500010 loops=1)
+--         ->  Hash  (cost=110755.98..110755.98 rows=1003001 width=8) (actual time=1222.001..1222.001 rows=999588 loops=1)
+--               Buckets: 131072  Batches: 16  Memory Usage: 3489kB
+--               ->  Hash Join  (cost=61663.07..110755.98 rows=1003001 width=8) (actual time=365.617..1084.059 rows=999588 loops=1)
 --                     Hash Cond: (resume.applicant_id = applicant.applicant_id)
---                     ->  Seq Scan on resume  (cost=0.00..309.02 rows=10068 width=8) (actual time=0.006..3.419 rows=10070 loops=1)
+--                     ->  Seq Scan on resume  (cost=0.00..30811.02 rows=1003001 width=8) (actual time=0.024..197.206 rows=999588 loops=1)
 --                           Filter: active
---                           Rows Removed by Filter: 9935
---                     ->  Hash  (cost=289.03..289.03 rows=20003 width=8) (actual time=4.471..4.471 rows=20004 loops=1)
---                           Buckets: 32768  Batches: 1  Memory Usage: 1038kB
---                           ->  Seq Scan on applicant  (cost=0.00..289.03 rows=20003 width=8) (actual time=0.006..1.721 rows=20004 loops=1)
---   ->  Hash  (cost=935.08..935.08 rows=40008 width=54) (actual time=23.176..23.176 rows=40012 loops=1)
---         Buckets: 65536  Batches: 1  Memory Usage: 3975kB
---         ->  Seq Scan on job  (cost=0.00..935.08 rows=40008 width=54) (actual time=0.014..8.544 rows=40012 loops=1)
--- Planning time: 0.978 ms
--- Execution time: 55.282 ms
-
+--                           Rows Removed by Filter: 1000416
+--                     ->  Hash  (cost=28850.03..28850.03 rows=2000003 width=8) (actual time=365.218..365.218 rows=2000004 loops=1)
+--                           Buckets: 131072  Batches: 32  Memory Usage: 3477kB
+--                           ->  Seq Scan on applicant  (cost=0.00..28850.03 rows=2000003 width=8) (actual time=0.007..133.546 rows=2000004 loops=1)
+--   ->  Hash  (cost=93415.42..93415.42 rows=3999842 width=52) (actual time=1547.954..1547.954 rows=4000012 loops=1)
+--         Buckets: 65536  Batches: 128  Memory Usage: 3221kB
+--         ->  Seq Scan on job  (cost=0.00..93415.42 rows=3999842 width=52) (actual time=0.009..570.932 rows=4000012 loops=1)
+-- Planning time: 0.953 ms
+-- Execution time: 5305.100 ms
 
 -- Поиск резюме по городу, названию и зарплате
 EXPLAIN ANALYSE SELECT first_name, family_name, contact_email, contact_phone, title, city, description, salary FROM resume
@@ -209,48 +210,49 @@ JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
 WHERE city='Москва' AND title LIKE 'Инженер' AND salary && '[,410000]' AND active;
--- Nested Loop  (cost=1235.73..1571.36 rows=1 width=128) (actual time=26.760..26.768 rows=2 loops=1)
---   ->  Nested Loop  (cost=1235.44..1570.96 rows=1 width=75) (actual time=26.752..26.757 rows=2 loops=1)
---         ->  Hash Join  (cost=1235.15..1570.60 rows=1 width=75) (actual time=26.736..26.738 rows=2 loops=1)
+-- Nested Loop  (cost=83583.48..117027.57 rows=1 width=129) (actual time=507.353..507.359 rows=2 loops=1)
+--   ->  Nested Loop  (cost=83583.05..117027.03 rows=1 width=74) (actual time=507.345..507.349 rows=2 loops=1)
+--         ->  Hash Join  (cost=83582.63..117026.52 rows=1 width=74) (actual time=507.330..507.331 rows=2 loops=1)
 --               Hash Cond: (resume.job_id = job.job_id)
---               ->  Seq Scan on resume  (cost=0.00..309.02 rows=10068 width=8) (actual time=0.034..4.589 rows=10070 loops=1)
+--               ->  Seq Scan on resume  (cost=0.00..30811.02 rows=1003001 width=8) (actual time=0.040..181.557 rows=999588 loops=1)
 --                     Filter: active
---                     Rows Removed by Filter: 9935
---               ->  Hash  (cost=1235.14..1235.14 rows=1 width=75) (actual time=20.006..20.007 rows=2 loops=1)
+--                     Rows Removed by Filter: 1000416
+--               ->  Hash  (cost=83582.61..83582.61 rows=1 width=74) (actual time=240.976..240.976 rows=2 loops=1)
 --                     Buckets: 1024  Batches: 1  Memory Usage: 9kB
---                     ->  Seq Scan on job  (cost=0.00..1235.14 rows=1 width=75) (actual time=19.992..19.996 rows=2 loops=1)
---                           Filter: (((title)::text ~~ 'Инженер'::text) AND (salary && '(,410001)'::int8range) AND ((city)::text = 'Москва'::text))
---                           Rows Removed by Filter: 40010
---         ->  Index Scan using applicant_pkey on applicant  (cost=0.29..0.36 rows=1 width=8) (actual time=0.007..0.007 rows=1 loops=2)
+--                     ->  Gather  (cost=1000.00..83582.61 rows=1 width=74) (actual time=240.965..241.020 rows=2 loops=1)
+--                           Workers Planned: 2
+--                           Workers Launched: 2
+--                           ->  Parallel Seq Scan on job  (cost=0.00..82582.51 rows=1 width=74) (actual time=237.756..237.757 rows=1 loops=3)
+--                                 Filter: (((title)::text ~~ 'Инженер'::text) AND (salary && '(,410001)'::int8range) AND ((city)::text = 'Москва'::text))
+--                                 Rows Removed by Filter: 1333337
+--         ->  Index Scan using applicant_pkey on applicant  (cost=0.43..0.50 rows=1 width=8) (actual time=0.006..0.006 rows=1 loops=2)
 --               Index Cond: (applicant_id = resume.applicant_id)
---   ->  Index Scan using account_pkey on account  (cost=0.29..0.39 rows=1 width=61) (actual time=0.003..0.003 rows=1 loops=2)
+--   ->  Index Scan using account_pkey on account  (cost=0.43..0.54 rows=1 width=63) (actual time=0.004..0.004 rows=1 loops=2)
 --         Index Cond: (account_id = applicant.account_id)
--- Planning time: 2.044 ms
--- Execution time: 26.909 ms
-
+-- Planning time: 0.990 ms
+-- Execution time: 507.479 ms
 
 -- Написать сообщение соискателю
 EXPLAIN ANALYSE INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
 VALUES (8, 6, 4, 'Здравствуйте, приглашаем Вас пройти собеседование на должность исследователя!', '2019-01-25 17:01:58');
--- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.100..0.100 rows=0 loops=1)
---   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.028..0.029 rows=1 loops=1)
--- Planning time: 0.077 ms
--- Trigger for constraint message_account_id_fkey: time=0.342 calls=1
--- Trigger for constraint message_vacancy_id_fkey: time=0.249 calls=1
--- Trigger for constraint message_resume_id_fkey: time=0.290 calls=1
--- Execution time: 1.080 ms
-
+-- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.145..0.145 rows=0 loops=1)
+--   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.072..0.073 rows=1 loops=1)
+-- Planning time: 0.046 ms
+-- Trigger for constraint message_account_id_fkey: time=0.231 calls=1
+-- Trigger for constraint message_vacancy_id_fkey: time=0.145 calls=1
+-- Trigger for constraint message_resume_id_fkey: time=0.185 calls=1
+-- Execution time: 0.748 ms
 
 -- Пришел ответ от соискателя через 1 час
 EXPLAIN ANALYSE INSERT INTO message (account_id, vacancy_id, resume_id, text , send)
 VALUES (7, 6, 4, 'Здравствуйте, меня устроит любое время в ближайший вторник или среду.', '2019-01-25 18:01:58');
--- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.064..0.065 rows=0 loops=1)
---   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.016..0.016 rows=1 loops=1)
--- Planning time: 0.100 ms
--- Trigger for constraint message_account_id_fkey: time=0.265 calls=1
--- Trigger for constraint message_vacancy_id_fkey: time=0.190 calls=1
--- Trigger for constraint message_resume_id_fkey: time=0.168 calls=1
--- Execution time: 0.749 ms
+-- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.043..0.043 rows=0 loops=1)
+--   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.010..0.011 rows=1 loops=1)
+-- Planning time: 0.035 ms
+-- Trigger for constraint message_account_id_fkey: time=0.155 calls=1
+-- Trigger for constraint message_vacancy_id_fkey: time=0.098 calls=1
+-- Trigger for constraint message_resume_id_fkey: time=0.081 calls=1
+-- Execution time: 0.408 ms
 
 
 -- Посмотреть диалог по вакансии 6
@@ -260,26 +262,28 @@ JOIN vacancy USING (vacancy_id)
 JOIN resume USING (resume_id)
 WHERE vacancy_id = 6 AND resume_id =4
 ORDER BY send ASC;
--- Sort  (cost=2466.98..2466.98 rows=1 width=57) (actual time=30.042..30.043 rows=2 loops=1)
+-- Sort  (cost=10039.48..10039.48 rows=1 width=57) (actual time=41.081..41.082 rows=2 loops=1)
 --   Sort Key: message.send
 --   Sort Method: quicksort  Memory: 25kB
---   ->  Nested Loop  (cost=0.86..2466.97 rows=1 width=57) (actual time=29.970..29.993 rows=2 loops=1)
---         ->  Nested Loop  (cost=0.57..2458.65 rows=1 width=57) (actual time=29.959..29.974 rows=2 loops=1)
---               ->  Nested Loop  (cost=0.29..2450.34 rows=1 width=61) (actual time=29.947..29.956 rows=2 loops=1)
---                     ->  Seq Scan on message  (cost=0.00..2442.03 rows=1 width=37) (actual time=29.920..29.922 rows=2 loops=1)
---                           Filter: ((vacancy_id = 6) AND (resume_id = 4))
---                           Rows Removed by Filter: 100005
---                     ->  Index Scan using account_pkey on account hr  (cost=0.29..8.30 rows=1 width=32) (actual time=0.012..0.012 rows=1 loops=2)
+--   ->  Nested Loop  (cost=1001.28..10039.47 rows=1 width=57) (actual time=39.895..41.069 rows=2 loops=1)
+--         ->  Nested Loop  (cost=1000.85..10035.01 rows=1 width=57) (actual time=39.884..41.054 rows=2 loops=1)
+--               ->  Nested Loop  (cost=1000.43..10030.55 rows=1 width=61) (actual time=39.873..41.037 rows=2 loops=1)
+--                     ->  Gather  (cost=1000.00..10022.11 rows=1 width=37) (actual time=39.837..42.079 rows=2 loops=1)
+--                           Workers Planned: 2
+--                           Workers Launched: 2
+--                           ->  Parallel Seq Scan on message  (cost=0.00..9022.01 rows=1 width=37) (actual time=36.185..36.186 rows=1 loops=3)
+--                                 Filter: ((vacancy_id = 6) AND (resume_id = 4))
+--                                 Rows Removed by Filter: 190002
+--                     ->  Index Scan using account_pkey on account hr  (cost=0.43..8.45 rows=1 width=32) (actual time=0.015..0.015 rows=1 loops=2)
 --                           Index Cond: (account_id = message.account_id)
---               ->  Index Only Scan using vacancy_pkey on vacancy  (cost=0.29..8.30 rows=1 width=4) (actual time=0.007..0.007 rows=1 loops=2)
+--               ->  Index Only Scan using vacancy_pkey on vacancy  (cost=0.42..4.44 rows=1 width=4) (actual time=0.007..0.007 rows=1 loops=2)
 --                     Index Cond: (vacancy_id = 6)
 --                     Heap Fetches: 2
---         ->  Index Only Scan using resume_pkey on resume  (cost=0.29..8.30 rows=1 width=4) (actual time=0.005..0.006 rows=1 loops=2)
+--         ->  Index Only Scan using resume_pkey on resume  (cost=0.43..4.45 rows=1 width=4) (actual time=0.005..0.006 rows=1 loops=2)
 --               Index Cond: (resume_id = 4)
---               Heap Fetches: 2
--- Planning time: 0.871 ms
--- Execution time: 30.213 ms
-
+--               Heap Fetches: 0
+-- Planning time: 0.446 ms
+-- Execution time: 42.232 ms
 
 -- Добавить скрытую тестовую вакансию, в которой не будет ни одного сообщения
 EXPLAIN ANALYSE WITH insert_job AS (
@@ -291,28 +295,26 @@ EXPLAIN ANALYSE WITH insert_job AS (
 INSERT INTO vacancy (company_id, job_id, active)
 SELECT 4, job_id, FALSE
 FROM insert_job;
--- Insert on vacancy  (cost=0.01..0.04 rows=1 width=13) (actual time=0.070..0.071 rows=0 loops=1)
+-- Insert on vacancy  (cost=0.01..0.04 rows=1 width=13) (actual time=0.067..0.067 rows=0 loops=1)
 --   CTE insert_job
---     ->  Insert on job  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.045..0.046 rows=1 loops=1)
---           ->  Result  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.013..0.013 rows=1 loops=1)
---   ->  CTE Scan on insert_job  (cost=0.00..0.03 rows=1 width=13) (actual time=0.054..0.056 rows=1 loops=1)
--- Planning time: 0.104 ms
--- Trigger for constraint vacancy_company_id_fkey on vacancy: time=0.185 calls=1
--- Trigger for constraint vacancy_job_id_fkey on vacancy: time=0.111 calls=1
--- Execution time: 0.425 ms
-
+--     ->  Insert on job  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.041..0.042 rows=1 loops=1)
+--           ->  Result  (cost=0.00..0.01 rows=1 width=1584) (actual time=0.010..0.011 rows=1 loops=1)
+--   ->  CTE Scan on insert_job  (cost=0.00..0.03 rows=1 width=13) (actual time=0.049..0.051 rows=1 loops=1)
+-- Planning time: 0.092 ms
+-- Trigger for constraint vacancy_company_id_fkey on vacancy: time=0.147 calls=1
+-- Trigger for constraint vacancy_job_id_fkey on vacancy: time=0.101 calls=1
+-- Execution time: 0.369 ms
 
 -- Пришло ещё сообщение
 EXPLAIN ANALYSE INSERT INTO message (account_id, vacancy_id, resume_id, text, send)
 VALUES (7, 6, 4, 'Проверка связи', '2019-01-20 18:23:14');
--- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.126..0.126 rows=0 loops=1)
---   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.045..0.045 rows=1 loops=1)
--- Planning time: 0.070 ms
--- Trigger for constraint message_account_id_fkey: time=0.312 calls=1
--- Trigger for constraint message_vacancy_id_fkey: time=0.215 calls=1
--- Trigger for constraint message_resume_id_fkey: time=0.199 calls=1
--- Execution time: 0.921 ms
-
+-- Insert on message  (cost=0.00..0.01 rows=1 width=540) (actual time=0.056..0.056 rows=0 loops=1)
+--   ->  Result  (cost=0.00..0.01 rows=1 width=540) (actual time=0.013..0.013 rows=1 loops=1)
+-- Planning time: 0.087 ms
+-- Trigger for constraint message_account_id_fkey: time=0.251 calls=1
+-- Trigger for constraint message_vacancy_id_fkey: time=0.193 calls=1
+-- Trigger for constraint message_resume_id_fkey: time=0.193 calls=1
+-- Execution time: 0.748 ms
 
 -- (б) список вакансий моей компании с количествами всех и новых сообщений
 EXPLAIN ANALYSE SELECT total_messages, new_messages, active, vacancy_id, title, city, description, salary FROM vacancy
@@ -327,52 +329,58 @@ JOIN
 WHERE account.account_id = 8 AND (message.account_id != 8 OR message.account_id IS NULL)
 GROUP BY vacancy_id) AS message USING (vacancy_id)
 JOIN job USING (job_id);
--- Nested Loop  (cost=2596.36..2841.91 rows=110 width=92) (actual time=0.123..0.123 rows=0 loops=1)
---   ->  Hash Join  (cost=2596.07..2777.39 rows=110 width=25) (actual time=0.123..0.123 rows=0 loops=1)
---         Hash Cond: (vacancy.vacancy_id = vacancy_1.vacancy_id)
---         ->  Seq Scan on vacancy  (cost=0.00..155.05 rows=10005 width=9) (actual time=0.012..0.012 rows=1 loops=1)
---         ->  Hash  (cost=2594.69..2594.69 rows=110 width=20) (actual time=0.094..0.094 rows=0 loops=1)
---               Buckets: 1024  Batches: 1  Memory Usage: 8kB
---               ->  GroupAggregate  (cost=2590.84..2593.59 rows=110 width=20) (actual time=0.094..0.094 rows=0 loops=1)
+-- Merge Join  (cost=33720.33..33775.43 rows=1053 width=91) (actual time=4.604..4.604 rows=0 loops=1)
+--   Merge Cond: (job.job_id = vacancy.job_id)
+--   ->  Index Scan using job_pkey on job  (cost=0.43..171452.18 rows=3999842 width=74) (actual time=0.017..0.017 rows=1 loops=1)
+--   ->  Sort  (cost=33718.74..33721.37 rows=1053 width=25) (actual time=4.585..4.586 rows=0 loops=1)
+--         Sort Key: vacancy.job_id
+--         Sort Method: quicksort  Memory: 25kB
+--         ->  Nested Loop  (cost=25631.50..33665.88 rows=1053 width=25) (actual time=4.571..4.571 rows=0 loops=1)
+--               ->  GroupAggregate  (cost=25631.07..25657.40 rows=1053 width=20) (actual time=4.570..4.570 rows=0 loops=1)
 --                     Group Key: vacancy_1.vacancy_id
---                     ->  Sort  (cost=2590.84..2591.12 rows=110 width=12) (actual time=0.093..0.093 rows=0 loops=1)
+--                     ->  Sort  (cost=25631.07..25633.70 rows=1053 width=12) (actual time=4.569..4.569 rows=0 loops=1)
 --                           Sort Key: vacancy_1.vacancy_id
 --                           Sort Method: quicksort  Memory: 25kB
---                           ->  Nested Loop  (cost=196.58..2587.11 rows=110 width=12) (actual time=0.081..0.081 rows=0 loops=1)
---                                 ->  Nested Loop Left Join  (cost=196.30..2557.38 rows=100 width=20) (actual time=0.080..0.081 rows=0 loops=1)
---                                       Join Filter: (read_message.account_id = account.account_id)
---                                       ->  Nested Loop  (cost=196.01..2523.31 rows=100 width=20) (actual time=0.080..0.080 rows=0 loops=1)
---                                             ->  Index Only Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=4) (actual time=0.019..0.020 rows=1 loops=1)
---                                                   Index Cond: (account_id = 8)
---                                                   Heap Fetches: 1
---                                             ->  Hash Right Join  (cost=195.73..2514.00 rows=100 width=20) (actual time=0.059..0.059 rows=0 loops=1)
---                                                   Hash Cond: (message.vacancy_id = vacancy_1.vacancy_id)
---                                                   Filter: ((message.account_id <> 8) OR (message.account_id IS NULL))
---                                                   ->  Seq Scan on message  (cost=0.00..1942.02 rows=100002 width=12) (never executed)
---                                                   ->  Hash  (cost=195.60..195.60 rows=10 width=16) (actual time=0.046..0.046 rows=0 loops=1)
---                                                         Buckets: 1024  Batches: 1  Memory Usage: 8kB
---                                                         ->  Nested Loop  (cost=8.60..195.60 rows=10 width=16) (actual time=0.046..0.046 rows=0 loops=1)
---                                                               ->  Hash Join  (cost=8.31..189.74 rows=10 width=20) (actual time=0.045..0.045 rows=0 loops=1)
---                                                                     Hash Cond: (vacancy_1.company_id = hr_manager.company_id)
---                                                                     ->  Seq Scan on vacancy vacancy_1  (cost=0.00..155.05 rows=10005 width=12) (actual time=0.007..0.007 rows=1 loops=1)
---                                                                     ->  Hash  (cost=8.30..8.30 rows=1 width=8) (actual time=0.011..0.011 rows=0 loops=1)
---                                                                           Buckets: 1024  Batches: 1  Memory Usage: 8kB
---                                                                           ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..8.30 rows=1 width=8) (actual time=0.010..0.010 rows=0 loops=1)
---                                                                                 Index Cond: (account_id = 8)
---                                                               ->  Index Only Scan using job_pkey on job job_1  (cost=0.29..0.59 rows=1 width=4) (never executed)
---                                                                     Index Cond: (job_id = vacancy_1.job_id)
---                                                                     Heap Fetches: 0
---                                       ->  Index Only Scan using read_message_message_id_account_id_key on read_message  (cost=0.29..0.33 rows=1 width=8) (never executed)
---                                             Index Cond: ((message_id = message.message_id) AND (account_id = 8))
+--                           ->  Nested Loop Left Join  (cost=11926.13..25578.21 rows=1053 width=12) (actual time=4.566..4.566 rows=0 loops=1)
+--                                 Join Filter: (read_message.account_id = account.account_id)
+--                                 ->  Nested Loop  (cost=11925.84..25239.49 rows=1053 width=12) (actual time=4.566..4.566 rows=0 loops=1)
+--                                       ->  Index Only Scan using account_pkey on account  (cost=0.43..4.45 rows=1 width=4) (actual time=0.012..0.014 rows=1 loops=1)
+--                                             Index Cond: (account_id = 8)
 --                                             Heap Fetches: 0
---                                 ->  Index Only Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=4) (never executed)
---                                       Index Cond: (company_id = vacancy_1.company_id)
+--                                       ->  Hash Right Join  (cost=11925.41..25224.51 rows=1053 width=12) (actual time=4.550..4.550 rows=0 loops=1)
+--                                             Hash Cond: (message.vacancy_id = vacancy_1.vacancy_id)
+--                                             Filter: ((message.account_id <> 8) OR (message.account_id IS NULL))
+--                                             ->  Seq Scan on message  (cost=0.00..11156.81 rows=569281 width=12) (never executed)
+--                                             ->  Hash  (cost=11912.25..11912.25 rows=1053 width=8) (actual time=4.544..4.544 rows=0 loops=1)
+--                                                   Buckets: 2048  Batches: 1  Memory Usage: 16kB
+--                                                   ->  Merge Join  (cost=11869.06..11912.25 rows=1053 width=8) (actual time=4.544..4.544 rows=0 loops=1)
+--                                                         Merge Cond: (job_1.job_id = vacancy_1.job_id)
+--                                                         ->  Index Only Scan using job_pkey on job job_1  (cost=0.43..118030.06 rows=3999842 width=4) (actual time=0.043..0.043 rows=1 loops=1)
+--                                                               Heap Fetches: 0
+--                                                         ->  Sort  (cost=11867.47..11870.10 rows=1053 width=12) (actual time=4.499..4.499 rows=0 loops=1)
+--                                                               Sort Key: vacancy_1.job_id
+--                                                               Sort Method: quicksort  Memory: 25kB
+--                                                               ->  Gather  (cost=1036.83..11814.61 rows=1053 width=12) (actual time=4.494..5.965 rows=0 loops=1)
+--                                                                     Workers Planned: 2
+--                                                                     Workers Launched: 2
+--                                                                     ->  Hash Join  (cost=36.83..10709.31 rows=439 width=12) (actual time=0.086..0.086 rows=0 loops=3)
+--                                                                           Hash Cond: (vacancy_1.company_id = company.company_id)
+--                                                                           ->  Hash Join  (cost=8.45..10679.78 rows=439 width=20) (actual time=0.086..0.086 rows=0 loops=3)
+--                                                                                 Hash Cond: (vacancy_1.company_id = hr_manager.company_id)
+--                                                                                 ->  Parallel Seq Scan on vacancy vacancy_1  (cost=0.00..9572.69 rows=416669 width=12) (actual time=0.007..0.007 rows=1 loops=3)
+--                                                                                 ->  Hash  (cost=8.44..8.44 rows=1 width=8) (actual time=0.012..0.012 rows=0 loops=3)
+--                                                                                       Buckets: 1024  Batches: 1  Memory Usage: 8kB
+--                                                                                       ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..8.44 rows=1 width=8) (actual time=0.012..0.012 rows=0 loops=3)
+--                                                                                             Index Cond: (account_id = 8)
+--                                                                           ->  Hash  (cost=16.50..16.50 rows=950 width=4) (never executed)
+--                                                                                 ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=4) (never executed)
+--                                 ->  Index Only Scan using read_message_message_id_account_id_key on read_message  (cost=0.29..0.31 rows=1 width=8) (never executed)
+--                                       Index Cond: ((message_id = message.message_id) AND (account_id = 8))
 --                                       Heap Fetches: 0
---   ->  Index Scan using job_pkey on job  (cost=0.29..0.59 rows=1 width=75) (never executed)
---         Index Cond: (job_id = vacancy.job_id)
--- Planning time: 5.643 ms
--- Execution time: 0.348 ms
-
+--               ->  Index Scan using vacancy_pkey on vacancy  (cost=0.42..7.60 rows=1 width=9) (never executed)
+--                     Index Cond: (vacancy_id = vacancy_1.vacancy_id)
+-- Planning time: 2.541 ms
+-- Execution time: 6.224 ms
 
 -- Второй вариант для
 -- (б) список вакансий моей компании с количествами всех и новых сообщений
@@ -386,64 +394,68 @@ EXPLAIN ANALYSE SELECT DISTINCT COUNT(message.message_id) OVER (PARTITION BY res
     LEFT JOIN message  USING (vacancy_id)
     LEFT JOIN read_message  ON (read_message.account_id = account.account_id AND message.message_id = read_message.message_id)
 WHERE account.account_id = 8 AND (message.account_id != 8 OR message.account_id IS NULL);
--- Unique  (cost=2597.05..2599.52 rows=110 width=96) (actual time=0.092..0.092 rows=0 loops=1)
---   ->  Sort  (cost=2597.05..2597.32 rows=110 width=96) (actual time=0.092..0.092 rows=0 loops=1)
+-- Unique  (cost=25719.54..25743.23 rows=1053 width=95) (actual time=6.266..6.266 rows=0 loops=1)
+--   ->  Sort  (cost=25719.54..25722.17 rows=1053 width=95) (actual time=6.264..6.264 rows=0 loops=1)
 --         Sort Key: (count(message.message_id) OVER (?)), ((count(message.message_id) OVER (?) - count(read_message.message_id) OVER (?))), vacancy.active, vacancy.vacancy_id, job.title, job.city, job.description, job.salary
 --         Sort Method: quicksort  Memory: 25kB
---         ->  WindowAgg  (cost=2590.84..2593.32 rows=110 width=96) (actual time=0.078..0.078 rows=0 loops=1)
---               ->  Sort  (cost=2590.84..2591.12 rows=110 width=88) (actual time=0.076..0.076 rows=0 loops=1)
+--         ->  WindowAgg  (cost=25642.98..25666.68 rows=1053 width=95) (actual time=6.246..6.246 rows=0 loops=1)
+--               ->  Sort  (cost=25642.98..25645.62 rows=1053 width=87) (actual time=6.239..6.240 rows=0 loops=1)
 --                     Sort Key: message.resume_id
 --                     Sort Method: quicksort  Memory: 25kB
---                     ->  Nested Loop  (cost=196.58..2587.11 rows=110 width=88) (actual time=0.073..0.073 rows=0 loops=1)
---                           ->  Nested Loop Left Join  (cost=196.30..2557.38 rows=100 width=96) (actual time=0.073..0.073 rows=0 loops=1)
---                                 Join Filter: (read_message.account_id = account.account_id)
---                                 ->  Nested Loop  (cost=196.01..2523.31 rows=100 width=96) (actual time=0.072..0.072 rows=0 loops=1)
---                                       ->  Index Only Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=4) (actual time=0.013..0.014 rows=1 loops=1)
---                                             Index Cond: (account_id = 8)
---                                             Heap Fetches: 1
---                                       ->  Hash Right Join  (cost=195.73..2514.00 rows=100 width=96) (actual time=0.056..0.056 rows=0 loops=1)
---                                             Hash Cond: (message.vacancy_id = vacancy.vacancy_id)
---                                             Filter: ((message.account_id <> 8) OR (message.account_id IS NULL))
---                                             ->  Seq Scan on message  (cost=0.00..1942.02 rows=100002 width=16) (never executed)
---                                             ->  Hash  (cost=195.60..195.60 rows=10 width=88) (actual time=0.036..0.036 rows=0 loops=1)
---                                                   Buckets: 1024  Batches: 1  Memory Usage: 8kB
---                                                   ->  Nested Loop  (cost=8.60..195.60 rows=10 width=88) (actual time=0.035..0.035 rows=0 loops=1)
---                                                         ->  Hash Join  (cost=8.31..189.74 rows=10 width=21) (actual time=0.035..0.035 rows=0 loops=1)
---                                                               Hash Cond: (vacancy.company_id = hr_manager.company_id)
---                                                               ->  Seq Scan on vacancy  (cost=0.00..155.05 rows=10005 width=13) (actual time=0.012..0.012 rows=1 loops=1)
---                                                               ->  Hash  (cost=8.30..8.30 rows=1 width=8) (actual time=0.012..0.012 rows=0 loops=1)
---                                                                     Buckets: 1024  Batches: 1  Memory Usage: 8kB
---                                                                     ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..8.30 rows=1 width=8) (actual time=0.011..0.011 rows=0 loops=1)
---                                                                           Index Cond: (account_id = 8)
---                                                         ->  Index Scan using job_pkey on job  (cost=0.29..0.59 rows=1 width=75) (never executed)
---                                                               Index Cond: (job_id = vacancy.job_id)
---                                 ->  Index Only Scan using read_message_message_id_account_id_key on read_message  (cost=0.29..0.33 rows=1 width=8) (never executed)
---                                       Index Cond: ((message_id = message.message_id) AND (account_id = 8))
+--                     ->  Nested Loop Left Join  (cost=11938.04..25590.12 rows=1053 width=87) (actual time=6.236..6.236 rows=0 loops=1)
+--                           Join Filter: (read_message.account_id = account.account_id)
+--                           ->  Nested Loop  (cost=11937.75..25251.40 rows=1053 width=87) (actual time=6.234..6.235 rows=0 loops=1)
+--                                 ->  Index Only Scan using account_pkey on account  (cost=0.43..4.45 rows=1 width=4) (actual time=0.019..0.034 rows=1 loops=1)
+--                                       Index Cond: (account_id = 8)
 --                                       Heap Fetches: 0
---                           ->  Index Only Scan using company_pkey on company  (cost=0.28..0.30 rows=1 width=4) (never executed)
---                                 Index Cond: (company_id = vacancy.company_id)
+--                                 ->  Hash Right Join  (cost=11937.32..25236.42 rows=1053 width=87) (actual time=6.196..6.197 rows=0 loops=1)
+--                                       Hash Cond: (message.vacancy_id = vacancy.vacancy_id)
+--                                       Filter: ((message.account_id <> 8) OR (message.account_id IS NULL))
+--                                       ->  Seq Scan on message  (cost=0.00..11156.81 rows=569281 width=16) (never executed)
+--                                       ->  Hash  (cost=11924.16..11924.16 rows=1053 width=79) (actual time=6.188..6.188 rows=0 loops=1)
+--                                             Buckets: 2048  Batches: 1  Memory Usage: 16kB
+--                                             ->  Merge Join  (cost=11869.06..11924.16 rows=1053 width=79) (actual time=6.187..6.187 rows=0 loops=1)
+--                                                   Merge Cond: (job.job_id = vacancy.job_id)
+--                                                   ->  Index Scan using job_pkey on job  (cost=0.43..171452.18 rows=3999842 width=74) (actual time=0.015..0.015 rows=1 loops=1)
+--                                                   ->  Sort  (cost=11867.47..11870.10 rows=1053 width=13) (actual time=6.166..6.166 rows=0 loops=1)
+--                                                         Sort Key: vacancy.job_id
+--                                                         Sort Method: quicksort  Memory: 25kB
+--                                                         ->  Gather  (cost=1036.83..11814.61 rows=1053 width=13) (actual time=6.156..8.477 rows=0 loops=1)
+--                                                               Workers Planned: 2
+--                                                               Workers Launched: 2
+--                                                               ->  Hash Join  (cost=36.83..10709.31 rows=439 width=13) (actual time=0.190..0.190 rows=0 loops=3)
+--                                                                     Hash Cond: (vacancy.company_id = company.company_id)
+--                                                                     ->  Hash Join  (cost=8.45..10679.78 rows=439 width=21) (actual time=0.189..0.189 rows=0 loops=3)
+--                                                                           Hash Cond: (vacancy.company_id = hr_manager.company_id)
+--                                                                           ->  Parallel Seq Scan on vacancy  (cost=0.00..9572.69 rows=416669 width=13) (actual time=0.008..0.008 rows=1 loops=3)
+--                                                                           ->  Hash  (cost=8.44..8.44 rows=1 width=8) (actual time=0.017..0.017 rows=0 loops=3)
+--                                                                                 Buckets: 1024  Batches: 1  Memory Usage: 8kB
+--                                                                                 ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.42..8.44 rows=1 width=8) (actual time=0.017..0.017 rows=0 loops=3)
+--                                                                                       Index Cond: (account_id = 8)
+--                                                                     ->  Hash  (cost=16.50..16.50 rows=950 width=4) (never executed)
+--                                                                           ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=4) (never executed)
+--                           ->  Index Only Scan using read_message_message_id_account_id_key on read_message  (cost=0.29..0.31 rows=1 width=8) (never executed)
+--                                 Index Cond: ((message_id = message.message_id) AND (account_id = 8))
 --                                 Heap Fetches: 0
--- Planning time: 4.288 ms
--- Execution time: 0.239 ms
-
+-- Planning time: 3.680 ms
+-- Execution time: 8.769 ms
 
 -- прочитать сообщение #7
 EXPLAIN ANALYSE INSERT INTO read_message (message_id, account_id)
 VALUES (7,8);
--- Insert on read_message  (cost=0.00..0.01 rows=1 width=12) (actual time=0.156..0.157 rows=0 loops=1)
---   ->  Result  (cost=0.00..0.01 rows=1 width=12) (actual time=0.067..0.068 rows=1 loops=1)
--- Planning time: 0.054 ms
--- Trigger for constraint read_message_message_id_fkey: time=0.388 calls=1
--- Trigger for constraint read_message_account_id_fkey: time=0.278 calls=1
--- Execution time: 0.916 ms
-
+-- Insert on read_message  (cost=0.00..0.01 rows=1 width=12) (actual time=0.318..0.318 rows=0 loops=1)
+--   ->  Result  (cost=0.00..0.01 rows=1 width=12) (actual time=0.184..0.185 rows=1 loops=1)
+-- Planning time: 0.048 ms
+-- Trigger for constraint read_message_message_id_fkey: time=0.475 calls=1
+-- Trigger for constraint read_message_account_id_fkey: time=0.257 calls=1
+-- Execution time: 1.119 ms
 
 -- прочитать сообщение #8
 EXPLAIN ANALYSE INSERT INTO read_message (message_id, account_id)
 VALUES (8,8);
--- Insert on read_message  (cost=0.00..0.01 rows=1 width=12) (actual time=0.091..0.091 rows=0 loops=1)
---   ->  Result  (cost=0.00..0.01 rows=1 width=12) (actual time=0.019..0.020 rows=1 loops=1)
--- Planning time: 0.052 ms
--- Trigger for constraint read_message_message_id_fkey: time=0.326 calls=1
--- Trigger for constraint read_message_account_id_fkey: time=0.233 calls=1
--- Execution time: 0.725 ms
+-- Insert on read_message  (cost=0.00..0.01 rows=1 width=12) (actual time=0.062..0.062 rows=0 loops=1)
+--   ->  Result  (cost=0.00..0.01 rows=1 width=12) (actual time=0.013..0.013 rows=1 loops=1)
+-- Planning time: 0.032 ms
+-- Trigger for constraint read_message_message_id_fkey: time=0.242 calls=1
+-- Trigger for constraint read_message_account_id_fkey: time=0.149 calls=1
+-- Execution time: 0.499 ms
