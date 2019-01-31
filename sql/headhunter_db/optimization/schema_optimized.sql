@@ -40,7 +40,7 @@ CREATE TABLE vacancy
     vacancy_id SERIAL PRIMARY KEY,
     active BOOLEAN NOT NULL, -- add active to vacancy/resume and not to job because it is not a job property according to domain
     company_id INTEGER NOT NULL REFERENCES company (company_id),
-    job_id INTEGER REFERENCES job (job_id)
+    job_id INTEGER UNIQUE REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE vacancy
@@ -80,7 +80,7 @@ CREATE TABLE resume
     resume_id SERIAL PRIMARY KEY,
     active BOOLEAN NOT NULL, -- add active to vacancy/resume and not to job because it is not a job property according to domain
     applicant_id INTEGER NOT NULL REFERENCES applicant (applicant_id),
-    job_id INTEGER REFERENCES job (job_id)
+    job_id INTEGER UNIQUE REFERENCES job (job_id)
 );
 
 COMMENT ON TABLE resume
@@ -126,3 +126,18 @@ CREATE TABLE read_message
 COMMENT ON TABLE  read_message
     IS 'Таблица отношения прочитанности сообщения пользователем';
 
+
+CREATE INDEX message_resume_id_index ON message (resume_id);
+CREATE INDEX message_vacancy_id_index ON message (vacancy_id);
+-- CREATE INDEX message_account_id_index ON message (account_id);
+
+CREATE INDEX resume_applicant_id_index ON resume (applicant_id);
+CREATE INDEX resume_job_id_index ON resume (job_id);
+
+CREATE INDEX vacancy_company_id_index ON vacancy (company_id);
+CREATE INDEX vacancy_job_id_index ON vacancy (job_id);
+
+CREATE INDEX hr_manager_company_index ON hr_manager (company_id);
+
+CREATE INDEX job_city_index  ON job USING GIN(to_tsvector('russian', city));
+CREATE INDEX job_title_index  ON job USING GIN(to_tsvector('russian', title));

@@ -77,12 +77,28 @@ WHERE resume_id = 3;
 
 
 -- Удалить резюме
-WITH delete_resume AS (
-    DELETE FROM resume WHERE resume_id = 3
+WITH to_delete AS (
+     SELECT read_message_id, message_id, job_id, resume_id
+     FROM resume
+     JOIN job USING (job_id)
+     LEFT JOIN message USING (resume_id)
+     LEFT JOIN read_message USING (message_id)
+     WHERE resume_id = 20004
+), delete_read_message AS (
+    DELETE FROM read_message
+    WHERE read_message_id IN (SELECT read_message_id FROM to_delete)
+    RETURNING read_message_id
+    ), delete_message AS (
+     DELETE FROM message
+     WHERE message_id IN (SELECT message_id FROM to_delete)
+     RETURNING message_id
+), delete_resume AS (
+    DELETE FROM resume
+    WHERE resume_id IN (SELECT resume_id FROM to_delete)
     RETURNING job_id
-    )
+)
 DELETE FROM job
-USING delete_resume
+USING delete_read_message, delete_message, delete_resume
 WHERE job.job_id = delete_resume.job_id;
 
 
@@ -96,7 +112,8 @@ WITH insert_job AS (
    )
 INSERT INTO resume (job_id, applicant_id, active)
 SELECT job_id, 4, TRUE
-FROM insert_job;
+FROM insert_job
+RETURNING job_id;
 
 
 
