@@ -55,18 +55,18 @@ WHERE account_id = 8;
 --Посмотреть компании
 EXPLAIN ANALYSE SELECT name, first_name, family_name, contact_email, contact_phone FROM company
 JOIN hr_manager USING (company_id)
-JOIN account USING (account_id);
--- Hash Join  (cost=28.99..804.54 rows=5002 width=78) (actual time=0.977..19.257 rows=5002 loops=1)
---   Hash Cond: (hr_manager.company_id = company.company_id)
---   ->  Merge Join  (cost=0.61..762.98 rows=5002 width=61) (actual time=0.052..16.046 rows=5003 loops=1)
---         Merge Cond: (hr_manager.account_id = account.account_id)
---         ->  Index Scan using hr_manager_account_id_key on hr_manager  (cost=0.28..170.31 rows=5002 width=8) (actual time=0.032..1.709 rows=5003 loops=1)
---         ->  Index Scan using account_pkey on account  (cost=0.29..1041.39 rows=25007 width=61) (actual time=0.012..8.108 rows=25009 loops=1)
---   ->  Hash  (cost=16.50..16.50 rows=950 width=25) (actual time=0.909..0.909 rows=951 loops=1)
---         Buckets: 1024  Batches: 1  Memory Usage: 63kB
---         ->  Seq Scan on company  (cost=0.00..16.50 rows=950 width=25) (actual time=0.018..0.428 rows=951 loops=1)
--- Planning time: 0.810 ms
--- Execution time: 19.665 ms
+JOIN account USING (account_id)
+ORDER BY company_id OFFSET 20 LIMIT 10;
+-- Limit  (cost=15.65..23.05 rows=10 width=82) (actual time=0.233..0.333 rows=10 loops=1)
+--   ->  Nested Loop  (cost=0.84..3700.96 rows=4998 width=82) (actual time=0.044..0.326 rows=30 loops=1)
+--         ->  Merge Join  (cost=0.56..376.57 rows=4998 width=29) (actual time=0.032..0.110 rows=30 loops=1)
+--               Merge Cond: (company.company_id = hr_manager.company_id)
+--               ->  Index Scan using company_pkey on company  (cost=0.28..44.52 rows=950 width=25) (actual time=0.014..0.017 rows=7 loops=1)
+--               ->  Index Scan using hr_manager_company_index on hr_manager  (cost=0.28..267.24 rows=4998 width=8) (actual time=0.012..0.067 rows=30 loops=1)
+--         ->  Index Scan using account_pkey on account  (cost=0.29..0.67 rows=1 width=61) (actual time=0.005..0.005 rows=1 loops=30)
+--               Index Cond: (account_id = hr_manager.account_id)
+-- Planning time: 1.368 ms
+-- Execution time: 0.403 ms
 
 -- Зарегистрируем ещё одного hr менеджера, так как в компании их может быть несколько
 EXPLAIN ANALYSE WITH insert_account AS (
@@ -89,15 +89,22 @@ SELECT account_id,4 FROM insert_account;
 -- Посмотреть менеджеров компании
 EXPLAIN ANALYSE SELECT login, first_name, family_name FROM hr_manager
 JOIN account USING (account_id)
-WHERE company_id = 4;
--- Nested Loop  (cost=0.29..132.05 rows=5 width=49) (actual time=0.260..2.210 rows=5 loops=1)
---   ->  Seq Scan on hr_manager  (cost=0.00..90.53 rows=5 width=4) (actual time=0.236..2.107 rows=5 loops=1)
---         Filter: (company_id = 4)
---         Rows Removed by Filter: 4999
---   ->  Index Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=53) (actual time=0.015..0.015 rows=1 loops=5)
---         Index Cond: (account_id = hr_manager.account_id)
--- Planning time: 0.624 ms
--- Execution time: 2.286 ms
+WHERE company_id = 4
+ORDER BY hr_manager_id OFFSET 10 LIMIT 10;
+-- Limit  (cost=59.64..59.64 rows=1 width=53) (actual time=0.260..0.260 rows=0 loops=1)
+--   ->  Sort  (cost=59.63..59.64 rows=5 width=53) (actual time=0.254..0.256 rows=7 loops=1)
+--         Sort Key: hr_manager.hr_manager_id
+--         Sort Method: quicksort  Memory: 25kB
+--         ->  Nested Loop  (cost=4.61..59.57 rows=5 width=53) (actual time=0.068..0.215 rows=7 loops=1)
+--               ->  Bitmap Heap Scan on hr_manager  (cost=4.32..18.05 rows=5 width=8) (actual time=0.040..0.076 rows=7 loops=1)
+--                     Recheck Cond: (company_id = 4)
+--                     Heap Blocks: exact=5
+--                     ->  Bitmap Index Scan on hr_manager_company_index  (cost=0.00..4.32 rows=5 width=0) (actual time=0.025..0.026 rows=7 loops=1)
+--                           Index Cond: (company_id = 4)
+--               ->  Index Scan using account_pkey on account  (cost=0.29..8.30 rows=1 width=53) (actual time=0.016..0.016 rows=1 loops=7)
+--                     Index Cond: (account_id = hr_manager.account_id)
+-- Planning time: 0.885 ms
+-- Execution time: 0.428 ms
 
 --  Создать вакансию
 EXPLAIN ANALYSE WITH insert_job AS (
@@ -169,27 +176,23 @@ EXPLAIN ANALYSE SELECT first_name, family_name, contact_email, contact_phone, ti
 JOIN applicant USING (applicant_id)
 JOIN account USING (account_id)
 JOIN job USING (job_id)
-WHERE active;
--- Hash Join  (cost=2035.39..2835.32 rows=7708 width=106) (actual time=45.031..52.005 rows=7710 loops=1)
---   Hash Cond: (account.account_id = applicant.account_id)
---   ->  Seq Scan on account  (cost=0.00..629.07 rows=25007 width=61) (actual time=0.019..2.123 rows=25010 loops=1)
---   ->  Hash  (cost=1939.04..1939.04 rows=7708 width=53) (actual time=44.989..44.989 rows=7710 loops=1)
---         Buckets: 8192  Batches: 1  Memory Usage: 720kB
---         ->  Hash Join  (cost=878.70..1939.04 rows=7708 width=53) (actual time=22.670..42.321 rows=7710 loops=1)
---               Hash Cond: (resume.applicant_id = applicant.applicant_id)
---               ->  Hash Join  (cost=339.63..1379.74 rows=7708 width=53) (actual time=6.886..22.600 rows=7710 loops=1)
---                     Hash Cond: (job.job_id = resume.job_id)
---                     ->  Seq Scan on job  (cost=0.00..935.08 rows=40008 width=53) (actual time=0.012..5.666 rows=40012 loops=1)
---                     ->  Hash  (cost=243.28..243.28 rows=7708 width=8) (actual time=6.848..6.848 rows=7710 loops=1)
---                           Buckets: 8192  Batches: 1  Memory Usage: 366kB
---                           ->  Seq Scan on resume  (cost=0.00..243.28 rows=7708 width=8) (actual time=0.013..4.454 rows=7710 loops=1)
---                                 Filter: active
---                                 Rows Removed by Filter: 8021
---               ->  Hash  (cost=289.03..289.03 rows=20003 width=8) (actual time=15.741..15.741 rows=20004 loops=1)
---                     Buckets: 32768  Batches: 1  Memory Usage: 1038kB
---                     ->  Seq Scan on applicant  (cost=0.00..289.03 rows=20003 width=8) (actual time=0.023..6.358 rows=20004 loops=1)
--- Planning time: 1.910 ms
--- Execution time: 52.364 ms
+WHERE active
+ORDER BY resume_id OFFSET 10 LIMIT 10;
+-- Limit  (cost=15.94..30.72 rows=10 width=110) (actual time=0.413..0.647 rows=10 loops=1)
+--   ->  Nested Loop  (cost=1.15..11711.12 rows=7920 width=110) (actual time=0.060..0.639 rows=20 loops=1)
+--         ->  Nested Loop  (cost=0.86..6687.72 rows=7920 width=65) (actual time=0.048..0.441 rows=20 loops=1)
+--               ->  Nested Loop  (cost=0.57..3559.42 rows=7920 width=12) (actual time=0.035..0.269 rows=20 loops=1)
+--                     ->  Index Scan using resume_pkey on resume  (cost=0.29..559.82 rows=7920 width=12) (actual time=0.019..0.076 rows=20 loops=1)
+--                           Filter: active
+--                           Rows Removed by Filter: 15
+--                     ->  Index Scan using applicant_pkey on applicant  (cost=0.29..0.38 rows=1 width=8) (actual time=0.008..0.008 rows=1 loops=20)
+--                           Index Cond: (applicant_id = resume.applicant_id)
+--               ->  Index Scan using account_pkey on account  (cost=0.29..0.39 rows=1 width=61) (actual time=0.007..0.007 rows=1 loops=20)
+--                     Index Cond: (account_id = applicant.account_id)
+--         ->  Index Scan using job_pkey on job  (cost=0.29..0.63 rows=1 width=53) (actual time=0.008..0.008 rows=1 loops=20)
+--               Index Cond: (job_id = resume.job_id)
+-- Planning time: 3.399 ms
+-- Execution time: 0.760 ms
 
 -- Поиск резюме по городу, названию и зарплате
 EXPLAIN ANALYSE SELECT first_name, family_name, contact_email, contact_phone, title, city, description, salary FROM resume

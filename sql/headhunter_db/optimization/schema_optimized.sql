@@ -136,3 +136,5 @@ CREATE INDEX resume_job_id_index ON resume (job_id);
 
 CREATE INDEX vacancy_company_id_index ON vacancy (company_id);
 CREATE INDEX vacancy_job_id_index ON vacancy (job_id);
+
+CREATE INDEX hr_manager_company_index ON hr_manager (company_id);
